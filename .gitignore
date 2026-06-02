@@ -1,0 +1,54 @@
+# Build artifacts and intermediate files
+dist/
+**/obj/**
+**/bin/**
+**/.vs/**
+
+# Python Compiled Files
+# Ignore Python cache directories and bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+# Python Distribution & Build
+# Ignore package distribution files and build artifacts
+dist/
+build/
+*.egg-info/
+*.eggs/
+
+
+# Virtual Environments
+# Ignore virtual environment folders (each dev has their own)
+venv/
+.venv/
+venvs/
+env/
+
+# IDE & Editor Settings
+# Ignore IDE-specific files and caches
+.vscode/
+.vs/
+.idea/
+# Operating System Files
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+
+# Testing & Coverage
+# Ignore test reports and coverage data
+.pytest_cache/
+.coverage
+htmlcov/
+TEST*.xml
+tests_output/
+
+# Log Files
+# Ignore application and build logs
+*.log
+
+# Type Checking
+# Ignore mypy type checking cache
+.mypy_cache/
+
+
