@@ -36,7 +36,7 @@ def example(resource_name,options,force_current=100e-6,voltage_high_limit=0.8, v
 
         pin_info = session.channels["DUTPins"].get_pin_results_pin_information()
 
-        print("Starting Clamp Diode Test")
+        print("Starting Continuity test")
 
         # Test positive and negative clamp diodes
         for i in range(2):
