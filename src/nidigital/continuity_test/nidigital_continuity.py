@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """  Continuity Test Example for NI Digital Pattern Instrument
 
@@ -46,10 +46,10 @@ def example(resource_name, options, ppmu_current_level, test_voltage_limit_high,
     with nidigital.Session(resource_name=resource_name, reset_device=False, options=options) as session:
 
         # Store directory path
-        dir = os.path.join(os.path.dirname(__file__))
+        dir_path = os.path.join(os.path.dirname(__file__))
 
         # Load pin map
-        pin_map_filename = os.path.join(dir, 'PinMap.pinmap')
+        pin_map_filename = os.path.join(dir_path, 'PinMap.pinmap')
         session.load_pin_map(file_path=pin_map_filename)
 
         # Set all pins to PPMU mode to source current and measure voltage
@@ -81,15 +81,15 @@ def example(resource_name, options, ppmu_current_level, test_voltage_limit_high,
 
             for j in range(len(pin_info)): # Iterate through each pin's information to evaluate voltage measurements against test limits and determine pass/fail status for continuity test
 
-                if abs(test_voltage_limit_low) <= abs(voltages[i][j]) <= abs(test_voltage_limit_high):
+                if abs(test_voltage_limit_low) <= abs(voltages[i][j]) <= abs(test_voltage_limit_high): # Check if measured voltage is within specified limits for continuity test
                     pass_fail = "Pass"
                 else:
                     pass_fail = "Fail"
 
                 print(
                     f'{pin_info[j][0]} on Site {pin_info[j][1]} '
-                    f'@ {session.channels["All_Pins"].ppmu_current_level:.3e} A: '
-                    f'{voltages[i][j]:.3f} V --> {pass_fail}'
+                    f"Current: {session.channels['All_Pins'].ppmu_current_level:.3e}A, "
+                    f"Voltage: {voltages[i][j]:.3f}V, Status: {pass_fail}"
                 )
 
             # Reverse current for negative clamp diode
@@ -115,11 +115,11 @@ def _main(argsv):
     parser.add_argument('-pclvr', '--ppmu-current-level-range', default=128e-6, type=float, help='PPMU current level range')
     parser.add_argument('-pvll', '--ppmu-voltage-limit-low', default=-1.5, type=float, help='PPMU voltage limit low')
     parser.add_argument('-pvlh', '--ppmu-voltage-limit-high', default=1.5, type=float, help='PPMU voltage limit high')
-    
+    parser.add_argument('-op',  '--option-string', default='', type=str, help='Driver option string, eg: "Simulate=1, DriverSetup=Model:6571; BoardType:PXIe"')
     args = parser.parse_args(argsv)
 
     example(resource_name=args.resource_name,
-    options='Simulate=1, DriverSetup=Model:6571' if args.simulate == 'True' else '',
+    options=args.option_string,
     ppmu_current_level=args.ppmu_current_level,
     test_voltage_limit_high=args.test_voltage_limit_high,
     test_voltage_limit_low=args.test_voltage_limit_low,
