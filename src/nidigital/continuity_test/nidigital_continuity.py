@@ -21,8 +21,8 @@ iii. To simulate without hardware:
         cmd.exe:     python nidigital_continuity.py -op "Simulate=1, DriverSetup=Model:6571; BoardType:PXIe" 
 
 """
-
-import argparse  # For parsing command-line arguments
+# Module imports
+import argparse    # For parsing command-line arguments
 import nidigital   # NI-Digital instrument driver
 import os          # For constructing file paths (e.g., for the pin map file)
 import sys         # For accessing command-line arguments via sys.argv
