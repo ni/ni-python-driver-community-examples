@@ -1,5 +1,4 @@
-
-#!/usr/bin/python
+#!/usr/bin/env python3
 """NI-DCPower Pulse Current.
 
 This example demonstrates how to use the DCPower Pulse API to generate a single
@@ -14,7 +13,7 @@ i.   From terminal (with default values):
         python nidcpower_pulse_current.py
 
 ii.  From terminal (with custom values):
-        python nidcpower_pulse_current.py -n "PXI1Slot1" -il 200e-3 -pt 2e-3
+        python nidcpower_pulse_current.py -n "PXI1Slot1" -pcl 200e-3 -pnt 2e-3
         for more custom options, see the documentation of the example
 
 iii. To simulate without hardware:
@@ -95,22 +94,22 @@ def example(resource_name, options, pulse_current_level, pulse_current_level_ran
 
 
 def _main(argsv):
-    """Parses command-line arguments and calls example() with the parsed values."""
+    # Parses command-line arguments and calls example() with the parsed values.
     parser = argparse.ArgumentParser(
         description='Pulse current: source a single current pulse and measure.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('-n',   '--resource-name',              default='PXI1Slot1', help='Resource name of NI SMU')
-    parser.add_argument('-il',  '--pulse-current-level',        default=100e-3,  type=float, help='Pulse current level (A)')
-    parser.add_argument('-ilr', '--pulse-current-level-range',  default=100e-3,  type=float, help='Pulse current level range (A)')
-    parser.add_argument('-ibl', '--pulse-bias-current-level',   default=0.0,     type=float, help='Bias current between pulses (A)')
-    parser.add_argument('-vl',  '--pulse-voltage-limit',        default=1.0,     type=float, help='Voltage limit during pulse (V)')
-    parser.add_argument('-vlr', '--pulse-voltage-limit-range',  default=1.0,     type=float, help='Voltage limit range during pulse (V)')
-    parser.add_argument('-vbl', '--pulse-bias-voltage-limit',   default=1.0,     type=float, help='Voltage limit between pulses (V)')
-    parser.add_argument('-d',   '--source-delay',               default=50e-6,   type=float, help='Source delay (s)')
-    parser.add_argument('-pt',  '--pulse-on-time',              default=0.001,   type=float, help='Pulse on time (s)')
-    parser.add_argument('-pf',  '--pulse-off-time',             default=0.005,   type=float, help='Pulse off time (s)')
-    parser.add_argument('-pb',  '--pulse-bias-delay',           default=1e-6,    type=float, help='Pulse bias delay (s)')
+    parser.add_argument('-pcl',  '--pulse-current-level',        default=100e-3,  type=float, help='Pulse current level (A)')
+    parser.add_argument('-pclr', '--pulse-current-level-range',  default=100e-3,  type=float, help='Pulse current level range (A)')
+    parser.add_argument('-pbcl', '--pulse-bias-current-level',   default=0.0,     type=float, help='Bias current between pulses (A)')
+    parser.add_argument('-pvl',  '--pulse-voltage-limit',        default=1.0,     type=float, help='Voltage limit during pulse (V)')
+    parser.add_argument('-pvlr', '--pulse-voltage-limit-range',  default=1.0,     type=float, help='Voltage limit range during pulse (V)')
+    parser.add_argument('-pbvl', '--pulse-bias-voltage-limit',   default=1.0,     type=float, help='Voltage limit between pulses (V)')
+    parser.add_argument('-sd',   '--source-delay',               default=50e-6,   type=float, help='Source delay (s)')
+    parser.add_argument('-pnt',  '--pulse-on-time',              default=0.001,   type=float, help='Pulse on time (s)')
+    parser.add_argument('-pft',  '--pulse-off-time',             default=0.005,   type=float, help='Pulse off time (s)')
+    parser.add_argument('-pbd',  '--pulse-bias-delay',           default=1e-6,    type=float, help='Pulse bias delay (s)')
     parser.add_argument('-at',  '--aperture-time',              default=0.0001,  type=float, help='Aperture time (s)')
     parser.add_argument('-op',  '--option-string',              default='',      type=str,   help='Driver option string, eg: "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"')
     args = parser.parse_args(argsv)
@@ -132,18 +131,18 @@ def _main(argsv):
 
 
 def main():
-    """Entry point — passes real CLI args to _main()."""
+    # Entry point — passes real CLI args to _main().
     _main(sys.argv[1:])
 
 
 def test_example():
-    """Simulated hardware test — runs example() with a virtual PXIe-4139 (no real HW needed)."""
+    # Simulated hardware test — runs example() with a virtual PXIe-4139 (no real HW needed).
     options = {'simulate': True, 'driver_setup': {'Model': '4139', 'BoardType': 'PXIe'}}
     example('PXI1Slot1', options, 100e-3, 100e-3, 0.0, 1.0, 1.0, 1.0, 50e-6, 0.001, 0.005, 1e-6, 0.0001)
 
 
 def test_main():
-    """Simulated CLI test — runs _main() with simulate option string."""
+    # Simulated CLI test — runs _main() with simulate option string.
     cmd_line = ['--option-string', 'Simulate=1, DriverSetup=Model:4139; BoardType:PXIe']
     _main(cmd_line)
 
