@@ -80,7 +80,7 @@ def example(resource_name, options, pulse_voltage_level, pulse_voltage_level_ran
         # Commit sends all settings to hardware before initiate.
         session.commit()
 
-        # Initiate output via context manager, wait for pulse to complete, then fetch.
+        # Initiate output via context manager, wait for source complete, then fetch.
         # session.reset() called inside the initiate block to clear pulse hardware state.
         # timeout=5 s for fetch — adjust for longer pulse cycles.
         with session.initiate():
