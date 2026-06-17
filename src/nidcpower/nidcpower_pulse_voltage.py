@@ -1,5 +1,4 @@
-
-#!/usr/bin/python
+#!/usr/bin/env python3
 """NI-DCPower Pulse Voltage.
 
 This example demonstrates how to use the DCPower Pulse API to generate a single
@@ -14,10 +13,11 @@ i.   From terminal (with default values):
         python nidcpower_pulse_voltage.py
 
 ii.  From terminal (with custom values):
-        python nidcpower_pulse_voltage.py -n "PXI1Slot1" -vl 2.0 -pt 2e-3
+        python nidcpower_pulse_voltage.py -n "PXI1Slot1" -pvl 2.0 -pnt 2e-3
 
 iii. To simulate without hardware:
-        python nidcpower_pulse_voltage.py -op "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
+        PowerShell:  python nidcpower_pulse_voltage.py -op 'Simulate=1, DriverSetup=Model:4139; BoardType:PXIe'
+        cmd.exe:     python nidcpower_pulse_voltage.py -op "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
 
 """
 
@@ -84,7 +84,7 @@ def example(resource_name, options, pulse_voltage_level, pulse_voltage_level_ran
         # session.reset() called inside the initiate block to clear pulse hardware state.
         # timeout=5 s for fetch — adjust for longer pulse cycles.
         with session.initiate():
-            session.wait_for_event(event_id=nidcpower.Event.PULSE_COMPLETE)
+            session.wait_for_event(event_id=nidcpower.Event.SOURCE_COMPLETE)
             measurements = session.fetch_multiple(count=1, timeout=5)
             session.reset()
 
@@ -95,23 +95,23 @@ def example(resource_name, options, pulse_voltage_level, pulse_voltage_level_ran
 
 
 def _main(argsv):
-    """Parses command-line arguments and calls example() with the parsed values."""
+    # Parses command-line arguments and calls example() with the parsed values.
     parser = argparse.ArgumentParser(
         description='Pulse voltage: source a single voltage pulse and measure.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('-n',   '--resource-name',               default='PXI1Slot1', help='Resource name of NI SMU')
-    parser.add_argument('-vl',  '--pulse-voltage-level',         default=1.0,    type=float, help='Pulse voltage level (V)')
-    parser.add_argument('-vlr', '--pulse-voltage-level-range',   default=6.0,    type=float, help='Pulse voltage level range (V)')
-    parser.add_argument('-vbl', '--pulse-bias-voltage-level',    default=0.0,    type=float, help='Bias voltage between pulses (V)')
-    parser.add_argument('-cl',  '--pulse-current-limit',         default=10e-3,  type=float, help='Current limit during pulse (A)')
-    parser.add_argument('-clr', '--pulse-current-limit-range',   default=10e-3,  type=float, help='Current limit range during pulse (A)')
-    parser.add_argument('-cbl', '--pulse-bias-current-limit',    default=10e-3,  type=float, help='Current limit between pulses (A)')
-    parser.add_argument('-pf',  '--pulse-off-time',              default=5e-3,   type=float, help='Pulse off time (s)')
-    parser.add_argument('-pt',  '--pulse-on-time',               default=1e-3,   type=float, help='Pulse on time (s)')
-    parser.add_argument('-pb',  '--pulse-bias-delay',            default=1e-6,   type=float, help='Pulse bias delay (s)')
+    parser.add_argument('-pvl',  '--pulse-voltage-level',         default=1.0,    type=float, help='Pulse voltage level (V)')
+    parser.add_argument('-pvlr', '--pulse-voltage-level-range',   default=6.0,    type=float, help='Pulse voltage level range (V)')
+    parser.add_argument('-pvbl', '--pulse-bias-voltage-level',    default=0.0,    type=float, help='Bias voltage between pulses (V)')
+    parser.add_argument('-pclt',  '--pulse-current-limit',         default=10e-3,  type=float, help='Current limit during pulse (A)')
+    parser.add_argument('-pcltr', '--pulse-current-limit-range',   default=10e-3,  type=float, help='Current limit range during pulse (A)')
+    parser.add_argument('-pbclt', '--pulse-bias-current-limit',    default=10e-3,  type=float, help='Current limit between pulses (A)')
+    parser.add_argument('-pft',  '--pulse-off-time',              default=5e-3,   type=float, help='Pulse off time (s)')
+    parser.add_argument('-pnt',  '--pulse-on-time',               default=1e-3,   type=float, help='Pulse on time (s)')
+    parser.add_argument('-pbd',  '--pulse-bias-delay',            default=1e-6,   type=float, help='Pulse bias delay (s)')
     parser.add_argument('-at',  '--aperture-time',               default=0.1e-3, type=float, help='Aperture time (s)')
-    parser.add_argument('-d',   '--source-delay',                default=50e-6,  type=float, help='Source delay (s)')
+    parser.add_argument('-sd',   '--source-delay',                default=50e-6,  type=float, help='Source delay (s)')
     parser.add_argument('-op',  '--option-string',               default='',     type=str,   help='Driver option string, eg: "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"')
     args = parser.parse_args(argsv)
     example(
@@ -132,18 +132,18 @@ def _main(argsv):
 
 
 def main():
-    """Entry point — passes real CLI args to _main()."""
+    # Entry point — passes real CLI args to _main().
     _main(sys.argv[1:])
 
 
 def test_example():
-    """Simulated hardware test — runs example() with a virtual PXIe-4139 (no real HW needed)."""
+    # Simulated hardware test — runs example() with a virtual PXIe-4139 (no real HW needed).
     options = {'simulate': True, 'driver_setup': {'Model': '4139', 'BoardType': 'PXIe'}}
     example('PXI1Slot1', options, 1.0, 6.0, 0.0, 10e-3, 10e-3, 10e-3, 5e-3, 1e-3, 1e-6, 0.1e-3, 50e-6)
 
 
 def test_main():
-    """Simulated CLI test — runs _main() with simulate option string."""
+    # Simulated CLI test — runs _main() with simulate option string.
     cmd_line = ['--option-string', 'Simulate=1, DriverSetup=Model:4139; BoardType:PXIe']
     _main(cmd_line)
 
