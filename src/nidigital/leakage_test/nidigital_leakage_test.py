@@ -10,7 +10,7 @@ i.   From terminal (with default values):
         python nidigital_leakage_test.py
 
 ii.  From terminal (with custom values):
-        python nidigital_leakage_test.py -n "PXIe6570" -tv "0,3" -cl "25e-6" -pv "3.3" -at "20e-6" -dcl "10e-6" -pcl "10e-3"
+        python nidigital_leakage_test.py -n "PXI1Slot2" -tv "0,3" -cl "25e-6" -pv "3.3" -at "20e-6" -dcl "2e-6" -pcl "10e-3"
         for more custom options, see the documentation of the example
 
 iii. To simulate without hardware:
