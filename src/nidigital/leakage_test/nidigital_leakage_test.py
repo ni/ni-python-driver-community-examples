@@ -93,7 +93,7 @@ def example(resource_name, options, test_voltages, current_limit, power_voltage,
                     f"--> {result}"
                 )
 
-        session.channels[""].selected_function = (nidigital.SelectedFunction.DISCONNECT)
+        session.channels["All_Pins"].selected_function = (nidigital.SelectedFunction.DISCONNECT)
 
     return currents 
 
