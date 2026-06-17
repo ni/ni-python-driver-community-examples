@@ -10,15 +10,15 @@ The pin map file can be modified to test different pins as needed.
 HOW TO RUN:
 -----------
 i.   From terminal (with default values):
-        python nidigital_continuity.py
+        python nidigital_continuity_test.py
 
 ii.  From terminal (with custom values):
-        python nidigital_continuity.py -n "PXI1Slot2" -s False -pcl 100e-6 -tvlh 0.8 -tvll 0.0 -pat 20e-6 -pclr 10e-3 -pclvr 128e-6 -pvll -1.5 -pvlh 1.5
+        python nidigital_continuity_test.py -n "PXI1Slot2" -s False -pcl 100e-6 -tvlh 0.8 -tvll 0.0 -pat 20e-6 -pclr 10e-3 -pclvr 128e-6 -pvll -1.5 -pvlh 1.5
         for more custom options, see the documentation of the example
 
 iii. To simulate without hardware:
-        PowerShell:  python nidigital_continuity.py -op 'Simulate=1, DriverSetup=Model:6571; BoardType:PXIe'
-        cmd.exe:     python nidigital_continuity.py -op "Simulate=1, DriverSetup=Model:6571; BoardType:PXIe" 
+        PowerShell:  python nidigital_continuity_test.py -op 'Simulate=1, DriverSetup=Model:6571; BoardType:PXIe'
+        cmd.exe:     python nidigital_continuity_test.py -op "Simulate=1, DriverSetup=Model:6571; BoardType:PXIe" 
 
 """
 # Module imports
