@@ -10,6 +10,12 @@
 		<PinGroup name="All_Pins">
 			<PinReference pin="VCC" />
 		</PinGroup>
+		<PinGroup name="DUTPins">
+			<PinReference pin="VCC" />
+		</PinGroup>
+		<PinGroup name="Power">
+			<PinReference pin="VCC" />
+		</PinGroup>
 	</PinGroups>
 	<Sites>
 		<Site siteNumber="0" />
