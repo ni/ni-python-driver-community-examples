@@ -6,8 +6,8 @@ This example demonstrates how to set up a hardware-timed Single Point operation.
 The hardware is configured to source a voltage, wait for a specified delay and
 then take a measurement.
 
-The example uses the default resource name, channel, current level,
-and voltage limit. Modify these values as needed for your measurement setup
+The example uses the default resource name, channel, voltage levels,
+current limit, and voltage range. Modify these values as needed for your measurement setup.
 
 HOW TO RUN:
 -----------
