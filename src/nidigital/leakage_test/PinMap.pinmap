@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PinMap xmlns="http://www.ni.com/TestStand/SemiconductorModule/PinMap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.5">
+	<Instruments>
+		<NIDigitalPatternInstrument name="PXI1Slot2" numberOfChannels="32" group="Digital" />
+	</Instruments>
+	<Pins>
+		<DUTPin name="VCC" />
+	</Pins>
+	<PinGroups>
+		<PinGroup name="All_Pins">
+			<PinReference pin="VCC" />
+		</PinGroup>
+		<PinGroup name="DUTPins">
+			<PinReference pin="VCC" />
+		</PinGroup>
+		<PinGroup name="Power">
+			<PinReference pin="VCC" />
+		</PinGroup>
+	</PinGroups>
+	<Sites>
+		<Site siteNumber="0" />
+	</Sites>
+	<Connections>
+		<Connection pin="VCC" siteNumber="0" instrument="PXI1Slot2" channel="0" />
+	</Connections>
+</PinMap>
