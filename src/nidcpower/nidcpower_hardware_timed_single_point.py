@@ -90,7 +90,7 @@ def _main(argsv):
     parser.add_argument('-cl', '--current-limit',         default=0.01,  type=float, help='Current limit (A)')
     parser.add_argument('-clr', '--current-limit-range',   default=0.01,  type=float, help='Current limit range — must be >= current-limit (A)')
     parser.add_argument('-sd',  '--source-delay',          default=0.05,  type=float, help='Source delay in seconds')
-    parser.add_argument('-op', '--option-string',         default='',    type=str,   help='Driver option string, eg: "Simulate=1, DriverSetup=Model:4130; BoardType:PXIe"')
+    parser.add_argument('-op', '--option-string',         default='',    type=str,   help='Driver option string, eg: "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"')
     args = parser.parse_args(argsv)
     example(
         resource_name=args.resource_name,
