@@ -95,8 +95,8 @@ def _main(argsv):
 
     parser = argparse.ArgumentParser(description="NI-DCPower Delayed Backplane Trigger Example")
 
-    parser.add_argument("-n1", "--smu1-resource-name", default="PXI4139", help="Triggering SMU resource name")
-    parser.add_argument("-n2", "--smu2-resource-name", default="PXIe4135", help="Triggered SMU resource name")
+    parser.add_argument("-n1", "--smu1-resource-name", default="PXI1Slot1", help="Triggering SMU resource name")
+    parser.add_argument("-n2", "--smu2-resource-name", default="PXI1Slot2", help="Triggered SMU resource name")
     parser.add_argument("-d", "--source-delay", type=float, default=50e-6, help="Source Complete Event delay (seconds)")
     parser.add_argument("-v1", "--voltage-smu1", type=float, default=1.0, help="Voltage level for SMU1")
     parser.add_argument("-v2", "--voltage-smu2", type=float, default=1.0, help="Voltage level for SMU2")
