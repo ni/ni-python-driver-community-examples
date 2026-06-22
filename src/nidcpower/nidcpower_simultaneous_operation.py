@@ -1,12 +1,12 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """NI-DCPower Simultaneous Operation.
 
 This example demonstrates how to program different outputs on multiple channels
 on a single device. When the program runs, both channels will update their 
 outputs to the specified Voltage Levels and take a voltage and current measurement.
 
-The example uses the default resource name, channel, current level,
-and voltage limit. Modify these values as needed for your measurement setup.
+The example uses the default resource name, channel, voltage level, current limit,
+and current limit range. Modify these values as needed for your measurement setup.
 
 HOW TO RUN:
 -----------
@@ -45,8 +45,6 @@ def example(resource_name, options, voltage_level_ch0, voltage_level_ch1,
         current_limit_range_ch1 (float): Current limit range for channel 1 (A)
         timeout (float)                : Timeout for waiting on Source Complete Event (s)
 
-    Returns:
-        (measurements_ch0, measurements_ch1) — measurement results from each channel
     """
     # 'with' block ensures session.abort() + session.close() are called automatically on exit.
     with nidcpower.Session(resource_name=resource_name, options=options) as session:
