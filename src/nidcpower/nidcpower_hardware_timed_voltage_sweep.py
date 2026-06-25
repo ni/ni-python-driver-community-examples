@@ -17,7 +17,7 @@ i.   From terminal (with default values):
 
 ii.  From terminal (with custom values):
         python nidcpower_hardware_timed_voltage_sweep.py -n "PXI1Slot1" \
-            -vs 1.0 -ve 5.0 -np 10 -sd 0.005 -cl 0.01
+            -vs 1.0 -ve 5.0 -sp 10 -sd 0.005 -cl 0.01
 
 iii. To simulate without hardware:
         PowerShell:  python nidcpower_hardware_timed_voltage_sweep.py \
@@ -75,11 +75,9 @@ def example(resource_name, options, voltage_start, voltage_stop, points, source_
         None — results are displayed as an IV curve graph
     """
 
-    # --------------------------------------------------------
-    # Step 1: Generate Voltage Sequence
+    # -> Generate Voltage Sequence
     # - Clips points to a minimum of 1
     # - Calculates step voltages for the sweep sequence
-    # --------------------------------------------------------
     points = np.clip(points, 1, 2147483647)  # Clip points to a minimum of 1 to avoid division by zero
     voltages = []                            # List to hold the calculated voltage levels for the sweep
     source_delays = []                       # List to hold the source delays for each voltage step
@@ -93,28 +91,22 @@ def example(resource_name, options, voltage_start, voltage_stop, points, source_
         for i in range(points):
             voltages.append((sequence_voltages * i) + voltage_start)
 
-    # --------------------------------------------------------
-    # Step 2: Set Up Graph
+    # -> Set Up Graph
     # - Configures figure size and creates subplot for IV curve
-    # --------------------------------------------------------
     plt.rcParams["figure.figsize"] = [7.50, 3.50] 
     plt.rcParams["figure.autolayout"] = True
     fig, ax = plt.subplots(nrows=1, figsize=(7, 9.6))
 
-    # --------------------------------------------------------
-    # Step 3: Initialize SMU Session
+    # -> Initialize SMU Session
     # - Opens communication with the instrument
     # - 'with' ensures automatic cleanup of session resources
-    # --------------------------------------------------------
     with nidcpower.Session(resource_name=resource_name, channels=0, options=options) as session:
 
-        # ----------------------------------------------------
-        # Step 4: Configure Source Settings
+        # -> Configure Source Settings
         # - source_mode     → SEQUENCE
         # - output_function → DC_VOLTAGE
         # - Enable autorange for voltage and current
         # - Set source delay and current limit
-        # ----------------------------------------------------
         session.source_mode = nidcpower.SourceMode.SEQUENCE
         session.output_function = nidcpower.OutputFunction.DC_VOLTAGE
         session.voltage_level_autorange = True
@@ -122,28 +114,22 @@ def example(resource_name, options, voltage_start, voltage_stop, points, source_
         session.source_delay = source_delay
         session.current_limit = current_limit
 
-        # ----------------------------------------------------
-        # Step 5: Build Source Delays and Load Sequence
+        # -> Build Source Delays and Load Sequence
         # - Builds matching source delay array for each voltage step
         # - Loads voltage sequence into the session
-        # ----------------------------------------------------
         for i in range(len(voltages)):
             source_delays.append(source_delay)
 
         session.set_sequence(values=voltages, source_delays=source_delays)
 
-        # ----------------------------------------------------
-        # Step 6: Initiate and Wait for Completion
+        # -> Initiate and Wait for Completion
         # - Starts the sequence and waits for SEQUENCE_ENGINE_DONE
-        # ----------------------------------------------------
         session.initiate()
         session.wait_for_event(event_id=nidcpower.Event.SEQUENCE_ENGINE_DONE, timeout=timeout)
 
-        # ----------------------------------------------------
-        # Step 7: Fetch Measurements
+        # -> Fetch Measurements
         # - Retrieves all voltage and current measurements
-        # - iterrate through measurements to separate voltage and current into individual lists
-        # ----------------------------------------------------
+        # - Iterates through measurements to separate voltage and current into individual lists
         measurements = session.fetch_multiple(count=points)
 
         measured_voltage = []  # List to hold the measured voltage values from the sweep
@@ -153,13 +139,11 @@ def example(resource_name, options, voltage_start, voltage_stop, points, source_
             measured_voltage.append(measurements[measure][0])
             measured_current.append(measurements[measure][1])
 
-        # ----------------------------------------------------
-        # Step 8: Plot and Display Results
+        # -> Plot and Display Results
         # - output is disabled to prevent further sourcing after the sweep
         # - Sets window title and axis labels for the IV curve  
         # - Configures axis formatting and plots IV curve
         # - Displays the graph with plt.show()
-        # ----------------------------------------------------
         session.output_enabled = False
 
         fig.canvas.manager.set_window_title(
@@ -184,7 +168,7 @@ def _main(argsv):
     parser.add_argument('-n',  '--resource-name',  default='PXI1Slot1', help='Resource name of NI SMU')
     parser.add_argument('-vs', '--voltage-start',  default=1.0,   type=float, help='Sweep start voltage (V)')
     parser.add_argument('-ve', '--voltage-stop',   default=5.0,   type=float, help='Sweep stop voltage (V)')
-    parser.add_argument('-np',  '--points',        default=10,    type=int,   help='Number of measurement points')
+    parser.add_argument('-sp', '--sweep-points',   default=10,    type=int,   help='Number of measurement points')
     parser.add_argument('-sd', '--source-delay',   default=0.005, type=float, help='Source delay for each step (s)')
     parser.add_argument('-cl', '--current-limit',  default=0.01,  type=float, help='Current limit (A)')
     parser.add_argument('-op', '--option-string',  default='',    type=str,   help='Driver option string, eg: "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"')
@@ -195,7 +179,7 @@ def _main(argsv):
         options=args.option_string,
         voltage_start=args.voltage_start,
         voltage_stop=args.voltage_stop,
-        points=args.points,
+        points=args.sweep_points,
         source_delay=args.source_delay,
         current_limit=args.current_limit,
         timeout=args.timeout
@@ -209,14 +193,18 @@ def main():
 
 def test_example():
     """Simulated hardware test — runs example() with a virtual PXIe-4139 (no real HW needed)."""
+    plt.switch_backend("Agg")
     options = {'simulate': True, 'driver_setup': {'Model': '4139', 'BoardType': 'PXIe'}}
     example('PXI1Slot1', options, 1.0, 5.0, 10, 0.005, 0.01, 10.0)
+    plt.close("all")
 
 
 def test_main():
     """Simulated CLI test — runs _main() with simulate option string."""
+    plt.switch_backend("Agg")
     cmd_line = ['--option-string', 'Simulate=1, DriverSetup=Model:4139; BoardType:PXIe']
     _main(cmd_line)
+    plt.close("all")
 
 
 # ------------------------------------------------------------
