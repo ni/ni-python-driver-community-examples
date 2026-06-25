@@ -18,7 +18,7 @@ i. From terminal (with default values):
 
 ii. From terminal (with custom values):
     python nidcpower_single_point_transient_response.py  -n "NISMU"  -v 1.0  -r 6.0  -m 250 -at 0.0001 -sd 0.0001 -tr NORMAL    
-    python nidcpower_single_point_transient_response.py  -n "NISMU"  -v 1.0  -r 6.0  -m 250 -at 0.0001 -sd 0.0001 -tr CUSTOM -vgb 5000 -vcf 50000 -vpzr 0.16 -cgb 40000 -ccf 250000 -cpzr 4000
+    python nidcpower_single_point_transient_response.py  -n "NISMU"  -v 1.0  -r 6.0  -m 250 -at 0.0001 -sd 0.0001 -tr CUSTOM -vgb 5000 -vcf 50000 -vpzr 0.16 -cgb 40000 -ccf 250000 -cpzr 4
 
 iii. To simulate without hardware:
     PowerShell:  python nidcpower_hardware_timed_single_point.py -op 'Simulate=1, DriverSetup=Model:4139; BoardType:PXIe'
