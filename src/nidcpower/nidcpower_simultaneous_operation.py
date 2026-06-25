@@ -14,10 +14,12 @@ i.   From terminal (with default values):
         python nidcpower_simultaneous_operation.py
 
 ii.  From terminal (with custom values):
-        python nidcpower_simultaneous_operation.py -n "PXI1Slot1" -vl0 3.0 -vl1 5.0
+        python nidcpower_simultaneous_operation.py -n "PXI1Slot1" \
+            -vl0 3.0 -vl1 5.0 -cl0 10e-3 -cl1 10e-3 -clr0 10e-3 -clr1 10e-3 -t 5.0
 
 iii. To simulate without hardware:
-        python nidcpower_simultaneous_operation.py -op "Simulate=1, DriverSetup=Model:4147; BoardType:PXIe"
+        python nidcpower_simultaneous_operation.py \
+            -op "Simulate=1, DriverSetup=Model:4147; BoardType:PXIe"
 
 """
 
