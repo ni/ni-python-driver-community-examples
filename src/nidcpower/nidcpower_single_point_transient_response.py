@@ -56,8 +56,6 @@ def example(resource_name, options, voltage_level, voltage_range, measure_record
         current_gain_bandwidth (float): Current gain bandwidth.
         current_compensation_frequency (float): Current compensation frequency.
         current_pole_zero_ratio (float): Current pole-zero ratio.
-    Returns:
-        list: List of fetched measurements.
     """
     voltage_points = [] # list to store voltage measurement points for plotting
     current_points = [] # list to store current measurement points for plotting
@@ -214,20 +212,20 @@ def _main(argsv):
     )
 
     example(
-        args.resource_name,
-        args.options,
-        args.voltage_level,
-        args.voltage_range,
-        args.measure_record,
-        args.aperture_time,
-        args.source_delay,
-        transient_response,
-        args.voltage_gain_bandwidth,
-        args.voltage_compensation_frequency,
-        args.voltage_pole_zero_ratio,
-        args.current_gain_bandwidth,
-        args.current_compensation_frequency,
-        args.current_pole_zero_ratio
+        resource_name = args.resource_name,
+        options = args.options,
+        voltage_level = args.voltage_level,
+        voltage_range = args.voltage_range,
+        measure_record = args.measure_record,
+        aperture_time = args.aperture_time,
+        source_delay = args.source_delay,
+        transient_response = transient_response,
+        voltage_gain_bandwidth = args.voltage_gain_bandwidth,
+        voltage_compensation_frequency = args.voltage_compensation_frequency,
+        voltage_pole_zero_ratio = args.voltage_pole_zero_ratio,
+        current_gain_bandwidth = args.current_gain_bandwidth,
+        current_compensation_frequency = args.current_compensation_frequency,
+        current_pole_zero_ratio = args.current_pole_zero_ratio
     )
 
 
@@ -241,22 +239,8 @@ def test_example():
     """
     Simulated hardware test —runs example() with a virtual PXIe-4145.
     """
-    example(
-        resource_name="NISMU",
-        options="Simulate=1,DriverSetup=Model:4145;BoardType:PXIe",
-        voltage_level=1.0,
-        voltage_range=6.0,
-        measure_record=100,
-        aperture_time=0.0001,
-        source_delay=0.0001,
-        transient_response=nidcpower.TransientResponse.NORMAL,
-        voltage_gain_bandwidth=5000,    
-        voltage_compensation_frequency=50000,
-        voltage_pole_zero_ratio=0.16,   
-        current_gain_bandwidth=40000,
-        current_compensation_frequency=250000,
-        current_pole_zero_ratio=4000
-    )
+    options = {'simulate': True, 'driver_setup': {'Model': '4139', 'BoardType': 'PXIe'}}
+    example('NISMU', options, 1.0, 6.0, 100.0, 0.0001, 0.0001, nidcpower.TransientResponse.NORMAL, 5000, 50000, 0.16, 40000, 250000, 4)
 
 
 def test_main():
