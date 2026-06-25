@@ -33,11 +33,11 @@ import matplotlib.ticker as ticker # for customizing plot tick marks
 import nidcpower # for controlling NI-DCPower instruments
 
 
-def example(resource_name, options, voltage_level, voltage_range, measure_record,
+def example(resource_name, options, voltage_level, voltage_level_range, measure_record,
              aperture_time, source_delay, transient_response,
              voltage_gain_bandwidth, voltage_compensation_frequency,
              voltage_pole_zero_ratio, current_gain_bandwidth ,
-             current_compensation_frequency, current_pole_zero_ratio):
+             current_compensation_frequency, current_pole_zero_ratio, show_plot=True):
     """
     Core measurement logic — opens session, configures,
     sources, measures, and plots transient response.
@@ -71,7 +71,7 @@ def example(resource_name, options, voltage_level, voltage_range, measure_record
         session.output_function = nidcpower.OutputFunction.DC_VOLTAGE #output function is set to DC voltage
 
         session.voltage_level = voltage_level # set the voltage level to the specified value
-        session.voltage_level_range = voltage_range # set the voltage range to the specified value
+        session.voltage_level_range = voltage_level_range # set the voltage range to the specified value
 
         session.aperture_time_units = nidcpower.ApertureTimeUnits.SECONDS # set the aperture time units to seconds
 
@@ -139,7 +139,7 @@ def example(resource_name, options, voltage_level, voltage_range, measure_record
         # Store Data for Plotting
         for measurement in measurements:
             voltage_points.append(measurement[0])
-            current_points.append(measurement[0])
+            current_points.append(measurement[1])
 
         x_time = [session.aperture_time * x for x in range(len(measurements))]
         # Plot Voltage
@@ -157,17 +157,20 @@ def example(resource_name, options, voltage_level, voltage_range, measure_record
         ax1.grid()
         ax1.plot(x_time,current_points)
         fig.suptitle("Single Point Transient Response")
-        plt.show()
+        if show_plot:
+            plt.show()
+        else:
+             plt.close(fig)
 
         session.abort() # abort the session to stop any ongoing operations
 
-def _main(argsv):
+def _main(argsv, show_plot=True):
     parser = argparse.ArgumentParser( description="NI-DCPower Single Point Transient Response Plot") 
 
     parser.add_argument( "-n","--resource-name",default="NISMU",help="NI-DCPower resource name")
     parser.add_argument( "-op", "--options", default="", help="Driver options string")
     parser.add_argument( "-v","--voltage-level", type=float, default=1.0, help="Voltage level (V)" )
-    parser.add_argument( "-r", "--voltage-range", type=float, default=6.0, help="Voltage range (V)" )
+    parser.add_argument( "-vr", "--voltage-level-range", type=float, default=6.0, help="Voltage range (V)" )
     parser.add_argument(  "-m","--measure-record",type=int,default=250,help="Number of measurement samples" )
     parser.add_argument( "-at", "--aperture-time", type=float, default=0, help="Aperture time in seconds" )
     parser.add_argument( "-sd", "--source-delay", type=float, default=0, help="Source delay in seconds" )
@@ -215,7 +218,7 @@ def _main(argsv):
         resource_name = args.resource_name,
         options = args.options,
         voltage_level = args.voltage_level,
-        voltage_range = args.voltage_range,
+        voltage_level_range = args.voltage_level_range,
         measure_record = args.measure_record,
         aperture_time = args.aperture_time,
         source_delay = args.source_delay,
@@ -225,7 +228,8 @@ def _main(argsv):
         voltage_pole_zero_ratio = args.voltage_pole_zero_ratio,
         current_gain_bandwidth = args.current_gain_bandwidth,
         current_compensation_frequency = args.current_compensation_frequency,
-        current_pole_zero_ratio = args.current_pole_zero_ratio
+        current_pole_zero_ratio = args.current_pole_zero_ratio,
+        show_plot = show_plot
     )
 
 
@@ -237,10 +241,10 @@ def main():
 
 def test_example():
     """
-    Simulated hardware test —runs example() with a virtual PXIe-4145.
+    Simulated hardware test —runs example() with a virtual PXIe-4139.
     """
     options = {'simulate': True, 'driver_setup': {'Model': '4139', 'BoardType': 'PXIe'}}
-    example('NISMU', options, 1.0, 6.0, 100.0, 0.0001, 0.0001, nidcpower.TransientResponse.NORMAL, 5000, 50000, 0.16, 40000, 250000, 4)
+    example('NISMU', options, 1.0, 6.0, 100, 0.0001, 0.0001, nidcpower.TransientResponse.NORMAL, 5000, 50000, 0.16, 40000, 250000, 4)
 
 
 def test_main():
@@ -249,7 +253,7 @@ def test_main():
     """
     cmd_line = [  "-n", "NISMU","-op","Simulate=1,DriverSetup=Model:4139;BoardType:PXIe"]
 
-    _main(cmd_line)
+    _main(cmd_line, show_plot=False)
 """  
 # ------------------------------------------------------------
 # Script execution starts here
