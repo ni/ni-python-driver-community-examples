@@ -18,7 +18,8 @@ i.   From terminal (with default values):
         python nidcpower_sequence_mode_transient_response.py
 
 ii.  From terminal (with custom values):
-        python nidcpower_sequence_mode_transient_response.py -n "PXI1Slot1" --transient-response NORMAL
+    python nidcpower_sequence_mode_transient_response.py  -n "NISMU"  -sv [0.0, 1.0, 2.0] sd [0.0001, 0.0001, 0.0001]  -vr 6.0  -m 250 -at 0.0001 -tr NORMAL    
+    python nidcpower_sequence_mode_transient_response.py  -n "NISMU"  -sv [0.0, 1.0, 2.0] sd [0.0001, 0.0001, 0.0001]  -vr 6.0  -m 250 -at 0.0001 -tr CUSTOM -vgb 5000 -vcf 50000 -vpzr 0.16 -cgb 40000 -ccf 250000 -cpzr 4
 
 iii. To simulate without hardware:
         python nidcpower_sequence_mode_transient_response.py -op "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
