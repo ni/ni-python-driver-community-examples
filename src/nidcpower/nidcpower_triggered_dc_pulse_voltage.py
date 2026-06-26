@@ -14,7 +14,7 @@ i. From terminal (with default values):
 
 ii. From terminal (with custom values):
     python nidcpower_triggered_dc_pulse_voltage.py \
-        -n "PXI1Slot1" -d "PXI1Slot2" -pvl 2.0 -pnt 200e-6 -pft 50e-6 -sr 1.8e6 -mbs 20000000 -pclt 1e-1  -pbclt 1e-1 -pvbl 0.0 -sd 0 --op ""
+        -n "PXI1Slot1" -d "PXI1Slot2" -pvl 2.0 -pnt 100e-6 -pft 100e-6 -sr 1.8e6 -mbs 20000000 -pclt 1e-1  -pbclt 1e-1 -pvbl 0.0 -sd 0 --op ""
 
 iii. To simulate without hardware:
     python nidcpower_triggered_dc_pulse_voltage.py -op "Simulate=1,DriverSetup=Model:4139;BoardType:PXIe" --
@@ -145,8 +145,8 @@ def _main(argsv):
     parser.add_argument("-n","--resource-name",default="PXI1Slot1",help="NI-DCPower resource name")
     parser.add_argument("-d","--daq-resource-name",default="PXI1Slot2",help="DAQ resource used for trigger generation")
     parser.add_argument("-pvl","--pulse-voltage-level",type=float,default=2.0,help="Pulse voltage level")
-    parser.add_argument("-pnt","--pulse-on-time",type=float,default=200e-6,help="Pulse on-time in seconds")
-    parser.add_argument("-pft","--pulse-off-time",type=float,default=50e-6,help="Pulse off-time in seconds")
+    parser.add_argument("-pnt","--pulse-on-time",type=float,default=100e-6,help="Pulse on-time in seconds")
+    parser.add_argument("-pft","--pulse-off-time",type=float,default=100e-6,help="Pulse off-time in seconds")
     parser.add_argument("-sr","--sample-rate",type=float,default=1.8e6,help="Sample rate in Hz")
     parser.add_argument("-mbs","--measure-buffer-size",type=int,default=int(20e6),help="Measurement buffer size")
     parser.add_argument("-pclt","--pulse-current-limit",type=float,default=1e-1,help="Pulse current limit in amperes")
@@ -180,7 +180,7 @@ def main():
 def test_example():
     """Simulated hardware test — runs example() with a simulated PXIe-4139 (no real HW needed)."""
     options="Simulate=1,DriverSetup=Model:4139;BoardType:PXIe"
-    example("PXI1Slot1","PXI1Slot2",2.0,200e-6,50e-6,1.8e6,int(20e6),1e-1,1e-1,0.0,0,options)
+    example("PXI1Slot1","PXI1Slot2",2.0,100e-6,100e-6,1.8e6,int(20e6),1e-1,1e-1,0.0,0,options)
 
 
 def test_main():
