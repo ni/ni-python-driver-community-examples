@@ -18,22 +18,27 @@ i.   From terminal (with default values):
         python nidcpower_sequence_mode_transient_response.py
 
 ii.  From terminal (with custom values):
-    python nidcpower_sequence_mode_transient_response.py  -n "NISMU"  -sv [0.0, 1.0, 2.0] sd [0.0001, 0.0001, 0.0001]  -vr 6.0  -m 250 -at 0.0001 -tr NORMAL    
-    python nidcpower_sequence_mode_transient_response.py  -n "NISMU"  -sv [0.0, 1.0, 2.0] sd [0.0001, 0.0001, 0.0001]  -vr 6.0  -m 250 -at 0.0001 -tr CUSTOM -vgb 5000 -vcf 50000 -vpzr 0.16 -cgb 40000 -ccf 250000 -cpzr 4
+    python nidcpower_sequence_mode_transient_response.py  \
+        -n "NISMU"  -sv [0.0, 1.0, 2.0] sd [0.0001, 0.0001, 0.0001]  -vr 6.0  -m 250 -at 0.0001 -tr NORMAL    
+    python nidcpower_sequence_mode_transient_response.py  \
+        -n "NISMU"  -sv [0.0, 1.0, 2.0] sd [0.0001, 0.0001, 0.0001]  -vr 6.0  -m 250 -at 0.0001 -tr CUSTOM -vgb 5000 -vcf 50000 -vpzr 0.16 -cgb 40000 -ccf 250000 -cpzr 4
 
 iii. To simulate without hardware:
         python nidcpower_sequence_mode_transient_response.py -op "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
 """
 
-
 import argparse # For parsing command line arguments
 import sys # For accessing command line arguments
+
 import matplotlib.pyplot as plt # For plotting voltage and current
 import matplotlib.ticker as ticker # For formatting axis ticks
+
 import nidcpower # For DCPower instruments
 
+
 def example(resource_name,options,sequence_voltages,source_delays,voltage_range,measure_record_length,aperture_time,transient_response,
-            voltage_gain_bandwidth,voltage_compensation_frequency,voltage_pole_zero_ratio,current_gain_bandwidth,current_compensation_frequency,current_pole_zero_ratio, show_plot=True):
+            voltage_gain_bandwidth,voltage_compensation_frequency,voltage_pole_zero_ratio,current_gain_bandwidth,
+            current_compensation_frequency,current_pole_zero_ratio):
     """
     Core measurement logic — opens session, configures, sources, measures, and plots results.
 
@@ -54,8 +59,8 @@ def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
         current_pole_zero_ratio (float): Current pole-zero ratio (CUSTOM mode only).
     """
 
-    voltage_points = []
-    current_points = []
+    voltage_points = [] # List to store voltage measurements
+    current_points = [] # List to store current measurements
 
     plt.rcParams["figure.figsize"] = [7.50, 3.50]
     plt.rcParams["figure.autolayout"] = True
@@ -66,14 +71,11 @@ def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
 
         session.source_mode = nidcpower.SourceMode.SEQUENCE # Set source mode to SEQUENCE
         session.output_function = nidcpower.OutputFunction.DC_VOLTAGE # Set output function to DC voltage
-
         session.voltage_level_range = voltage_range # Set voltage range
-
         session.set_sequence(sequence_voltages,source_delays) # Set sequence voltages and source delays
+
         session.aperture_time_units = nidcpower.ApertureTimeUnits.SECONDS # set the aperture time units to seconds
-
         session.aperture_time = aperture_time # set the aperture time
-
         session.transient_response = transient_response # Set the transient response mode (SLOW, NORMAL, FAST, CUSTOM)
 
         # Only set custom transient parameters if transient_response is CUSTOM
@@ -86,11 +88,8 @@ def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
             session.current_pole_zero_ratio = current_pole_zero_ratio
 
         session.measure_when = nidcpower.MeasureWhen.ON_MEASURE_TRIGGER # Set measure when to ON_MEASURE_TRIGGER
-
         session.exported_start_trigger_output_terminal = f"/{resource_name}/PXI_Trig0" # Export the start trigger to PXI_Trig0
-
         session.measure_trigger_type = nidcpower.TriggerType.DIGITAL_EDGE # Set measure trigger type to DIGITAL_EDGE
-
         session.digital_edge_measure_trigger_input_terminal = f"/{resource_name}/PXI_Trig0" # Set digital edge measure trigger input terminal
         session.measure_record_length = measure_record_length 
         session.measure_record_length_is_finite = False
@@ -150,17 +149,13 @@ def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
         ax1.plot(time_points, current_points)
 
         fig.suptitle("NI-DCPower Sequence Mode Transient Response")
-        if show_plot:
-            plt.show()
-        else:
-             plt.close(fig)
+        plt.show()
+        plt.close(fig)
 
         session.abort()
 
-def _main(argsv, show_plot=True):
-
-    parser = argparse.ArgumentParser(
-        description="NI-DCPower Sequence Mode Transient Response Plot")
+def _main(argsv):
+    parser = argparse.ArgumentParser(description="NI-DCPower Sequence Mode Transient Response Plot")
 
     parser.add_argument("-n","--resource-name",default="PXI1Slot1")
     parser.add_argument("-op","--options",default="")
@@ -223,29 +218,28 @@ def _main(argsv, show_plot=True):
         voltage_pole_zero_ratio=args.voltage_pole_zero_ratio,
         current_gain_bandwidth=args.current_gain_bandwidth,
         current_compensation_frequency=args.current_compensation_frequency,
-        current_pole_zero_ratio=args.current_pole_zero_ratio,
-        show_plot=show_plot)
+        current_pole_zero_ratio=args.current_pole_zero_ratio)
+
 
 def main():
     """Entry point — passes real CLI args to _main()."""
     _main(sys.argv[1:])
+
 
 def test_example():
     """Simulated hardware test — runs example() with a virtual PXIe-4139."""
     options = "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
     example("PXI1Slot1",options,[0.0, 1.0, 2.0],[1e-3, 1e-3,1e-3],6.0,5000,0.0001,nidcpower.TransientResponse.NORMAL,5000,50000,0.16,40000,250000,4)
 
+
 def test_main():
     """Simulated CLI test — runs _main() with simulate option string."""
 
     cmd_line = [  "-n", "NISMU","-op","Simulate=1,DriverSetup=Model:4139;BoardType:PXIe"]
 
-    _main(cmd_line, show_plot=False)
+    _main(cmd_line)
 # ------------------------------------------------------------
-
 # Script execution starts here
-
 # ------------------------------------------------------------
-
 if __name__ == '__main__':
     main()
