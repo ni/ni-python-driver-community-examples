@@ -17,8 +17,10 @@ i. From terminal (with default values):
     python nidcpower_single_point_transient_response.py
 
 ii. From terminal (with custom values):
-    python nidcpower_single_point_transient_response.py  -n "NISMU"  -v 1.0  -r 6.0  -m 250 -at 0.0001 -sd 0.0001 -tr NORMAL    
-    python nidcpower_single_point_transient_response.py  -n "NISMU"  -v 1.0  -r 6.0  -m 250 -at 0.0001 -sd 0.0001 -tr CUSTOM -vgb 5000 -vcf 50000 -vpzr 0.16 -cgb 40000 -ccf 250000 -cpzr 4
+    python nidcpower_single_point_transient_response.py  -n "NISMU"  -v 1.0  -r 6.0  -m 250 \
+        -at 0.0001 -sd 0.0001 -tr NORMAL    
+    python nidcpower_single_point_transient_response.py  -n "NISMU"  -v 1.0  -r 6.0  -m 250 \
+        -at 0.0001 -sd 0.0001 -tr CUSTOM -vgb 5000 -vcf 50000 -vpzr 0.16 -cgb 40000 -ccf 250000 -cpzr 4
 
 iii. To simulate without hardware:
     PowerShell:  python nidcpower_hardware_timed_single_point.py -op 'Simulate=1, DriverSetup=Model:4139; BoardType:PXIe'
@@ -28,8 +30,10 @@ iii. To simulate without hardware:
 import argparse # for parsing command line arguments
 import sys # for accessing command line arguments
 import time # for measuring execution time
+
 import matplotlib.pyplot as plt # for plotting data
 import matplotlib.ticker as ticker # for customizing plot tick marks
+
 import nidcpower # for controlling NI-DCPower instruments
 
 
@@ -37,7 +41,7 @@ def example(resource_name, options, voltage_level, voltage_level_range, measure_
              aperture_time, source_delay, transient_response,
              voltage_gain_bandwidth, voltage_compensation_frequency,
              voltage_pole_zero_ratio, current_gain_bandwidth ,
-             current_compensation_frequency, current_pole_zero_ratio, show_plot=True):
+             current_compensation_frequency, current_pole_zero_ratio):
     """
     Core measurement logic — opens session, configures,
     sources, measures, and plots transient response.
@@ -69,12 +73,9 @@ def example(resource_name, options, voltage_level, voltage_level_range, measure_
 
         session.source_mode = nidcpower.SourceMode.SINGLE_POINT #source mode is set to single point
         session.output_function = nidcpower.OutputFunction.DC_VOLTAGE #output function is set to DC voltage
-
         session.voltage_level = voltage_level # set the voltage level to the specified value
         session.voltage_level_range = voltage_level_range # set the voltage range to the specified value
-
         session.aperture_time_units = nidcpower.ApertureTimeUnits.SECONDS # set the aperture time units to seconds
-
         session.aperture_time = aperture_time # set the aperture time
         session.source_delay = source_delay # set the source delay
 
@@ -90,34 +91,25 @@ def example(resource_name, options, voltage_level, voltage_level_range, measure_
             session.current_pole_zero_ratio = current_pole_zero_ratio
 
         session.measure_when = nidcpower.MeasureWhen.ON_MEASURE_TRIGGER # set the measure when to on measure trigger
-
         session.exported_start_trigger_output_terminal =  f"/{resource_name}/PXI_Trig0" # set the exported start trigger output terminal to PXI_Trig0
-
         session.measure_trigger_type = nidcpower.TriggerType.DIGITAL_EDGE # set the measure trigger type to digital edge
-
         session.digital_edge_measure_trigger_input_terminal = f"/{resource_name}/PXI_Trig0" # set the digital edge measure trigger input terminal to PXI_Trig0
-
         session.measure_record_length_is_finite = False # set the measure record length to be infinite
         session.measure_record_length = measure_record # set the measure record length to the specified value
         session.measure_buffer_size = 20000000 # set the measure buffer size to 20 million samples
-
         session.output_enabled = True # enable the output
         # Commit
         session.commit()
-        # Initiate
+        # - Opens communication with the instrument
+        # - 'with' ensures automatic cleanup of session resources
         session.initiate()
         start_time = time.time() # record the start time for performance measurement
-
         measurements = session.channels[0].fetch_multiple(count=session.measure_record_length)  # fetch the measurements for the specified record length
-
         end_time = time.time()      # record the end time for performance measurement
 
         print(f"Generation Time: "f"{end_time - start_time:.6f} seconds") # print the time taken to generate the measurements)
-
         print(f"Measurements Acquired: {len(measurements)}") # print the number of measurements acquired
-
         print(f"Aperture Time: " f"{session.aperture_time:.2e} seconds") # print the aperture time
-
         if session.aperture_time > 0:
             print(f"Sample Rate: " f"{1/session.aperture_time:.2e} S/s") # print the sample rate
 
@@ -157,14 +149,12 @@ def example(resource_name, options, voltage_level, voltage_level_range, measure_
         ax1.grid()
         ax1.plot(x_time,current_points)
         fig.suptitle("Single Point Transient Response")
-        if show_plot:
-            plt.show()
-        else:
-             plt.close(fig)
+        plt.show()
+        plt.close(fig)
 
         session.abort() # abort the session to stop any ongoing operations
 
-def _main(argsv, show_plot=True):
+def _main(argsv):
     parser = argparse.ArgumentParser( description="NI-DCPower Single Point Transient Response Plot") 
 
     parser.add_argument( "-n","--resource-name",default="NISMU",help="NI-DCPower resource name")
@@ -229,7 +219,6 @@ def _main(argsv, show_plot=True):
         current_gain_bandwidth = args.current_gain_bandwidth,
         current_compensation_frequency = args.current_compensation_frequency,
         current_pole_zero_ratio = args.current_pole_zero_ratio,
-        show_plot = show_plot
     )
 
 
@@ -238,6 +227,7 @@ def main():
     Entry point — passes real CLI args to _main().
     """
     _main(sys.argv[1:])
+
 
 def test_example():
     """
@@ -253,7 +243,7 @@ def test_main():
     """
     cmd_line = [  "-n", "NISMU","-op","Simulate=1,DriverSetup=Model:4139;BoardType:PXIe"]
 
-    _main(cmd_line, show_plot=False)
+    _main(cmd_line)
 """  
 # ------------------------------------------------------------
 # Script execution starts here
