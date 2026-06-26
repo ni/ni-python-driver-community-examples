@@ -238,20 +238,18 @@ def _main(argsv):
 
 
 def main():
-    """
-    Entry point — passes real CLI args to _main().
-    """
+    """Entry point — passes real CLI args to _main()."""
     _main(sys.argv[1:])
 
 
 def test_example():
-    """ Simulated hardware test —runs example() with a virtual PXIe-4139."""
+    """Simulated hardware test —runs example() with a virtual PXIe-4139."""
     options = {'simulate': True, 'driver_setup': {'Model': '4139', 'BoardType': 'PXIe'}}
     example('NISMU', options, 1.0, 6.0, 100, 0.0001, 0.0001, nidcpower.TransientResponse.NORMAL, 5000, 50000, 0.16, 40000, 250000, 4)
 
 
 def test_main():
-    """ Simulated CLI test —runs _main() with simulate option string."""
+    """Simulated CLI test —runs _main() with simulate option string."""
     cmd_line = [  "-n", "NISMU","-op","Simulate=1,DriverSetup=Model:4139;BoardType:PXIe"]
     _main(cmd_line)
 
