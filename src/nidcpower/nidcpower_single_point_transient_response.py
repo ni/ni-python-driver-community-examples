@@ -23,10 +23,13 @@ ii. From terminal (with custom values):
         -at 0.0001 -sd 0.0001 -tr CUSTOM -vgb 5000 -vcf 50000 -vpzr 0.16 -cgb 40000 -ccf 250000 -cpzr 4
 
 iii. To simulate without hardware:
-    PowerShell:  python nidcpower_hardware_timed_single_point.py -op 'Simulate=1, DriverSetup=Model:4139; BoardType:PXIe'
-    cmd.exe:     python nidcpower_hardware_timed_single_point.py -op "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
+    PowerShell:  python nidcpower_hardware_timed_single_point.py \
+        -op 'Simulate=1, DriverSetup=Model:4139; BoardType:PXIe'
+    cmd.exe:     python nidcpower_hardware_timed_single_point.py \
+        -op "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
 """
 
+# Module imports
 import argparse # for parsing command line arguments
 import sys # for accessing command line arguments
 import time # for measuring execution time
@@ -69,6 +72,7 @@ def example(resource_name, options, voltage_level, voltage_level_range, measure_
 
     fig, (ax0, ax1) = plt.subplots(nrows=2,figsize=(7, 9.6))
 
+    # 'with' ensures automatic cleanup of session resources
     with nidcpower.Session(resource_name=resource_name, channels=0, reset=True, options=options, independent_channels=True) as session:
 
         session.source_mode = nidcpower.SourceMode.SINGLE_POINT #source mode is set to single point
@@ -97,12 +101,15 @@ def example(resource_name, options, voltage_level, voltage_level_range, measure_
         session.measure_record_length_is_finite = False # set the measure record length to be infinite
         session.measure_record_length = measure_record # set the measure record length to the specified value
         session.measure_buffer_size = 20000000 # set the measure buffer size to 20 million samples
+
         session.output_enabled = True # enable the output
-        # Commit
+        
+        # Commit sends all settings to hardware before initiate.
         session.commit()
+
         # - Opens communication with the instrument
-        # - 'with' ensures automatic cleanup of session resources
         session.initiate()
+
         start_time = time.time() # record the start time for performance measurement
         measurements = session.channels[0].fetch_multiple(count=session.measure_record_length)  # fetch the measurements for the specified record length
         end_time = time.time()      # record the end time for performance measurement
@@ -110,6 +117,7 @@ def example(resource_name, options, voltage_level, voltage_level_range, measure_
         print(f"Generation Time: "f"{end_time - start_time:.6f} seconds") # print the time taken to generate the measurements)
         print(f"Measurements Acquired: {len(measurements)}") # print the number of measurements acquired
         print(f"Aperture Time: " f"{session.aperture_time:.2e} seconds") # print the aperture time
+
         if session.aperture_time > 0:
             print(f"Sample Rate: " f"{1/session.aperture_time:.2e} S/s") # print the sample rate
 
@@ -128,12 +136,15 @@ def example(resource_name, options, voltage_level, voltage_level_range, measure_
             print(transient_settings)
         else:
             print(f"\nTransient Response Mode: {transient_response}")
+        
         # Store Data for Plotting
         for measurement in measurements:
             voltage_points.append(measurement[0])
             current_points.append(measurement[1])
 
+        # Calculate time points for plotting based on aperture time and number of measurements
         x_time = [session.aperture_time * x for x in range(len(measurements))]
+        
         # Plot Voltage
         ax0.xaxis.set_major_formatter(ticker.EngFormatter(unit="s"))
         ax0.yaxis.set_major_formatter(ticker.EngFormatter(unit="V"))
@@ -141,18 +152,21 @@ def example(resource_name, options, voltage_level, voltage_level_range, measure_
         ax0.set_ylabel("Voltage (V)")
         ax0.grid()
         ax0.plot(x_time,voltage_points)
-       # Plot Current
+       
+        # Plot Current
         ax1.xaxis.set_major_formatter(ticker.EngFormatter(unit="s"))
         ax1.yaxis.set_major_formatter(ticker.EngFormatter(unit="A"))
         ax1.set_xlabel("Time (s)")
         ax1.set_ylabel("Current (A)")
         ax1.grid()
         ax1.plot(x_time,current_points)
-        fig.suptitle("Single Point Transient Response")
-        plt.show()
-        plt.close(fig)
 
-        session.abort() # abort the session to stop any ongoing operations
+        fig.suptitle("Single Point Transient Response") # set the title for the figure
+
+        plt.show() # display the figure with the voltage and current plots
+
+        plt.close(fig) # close the figure to free up memory
+
 
 def _main(argsv):
     parser = argparse.ArgumentParser( description="NI-DCPower Single Point Transient Response Plot") 
@@ -185,12 +199,12 @@ def _main(argsv):
             print(f"Warning: Custom transient parameters are only used with -tr CUSTOM mode. Ignoring: {remaining_args}")
         
         # Set default values for custom parameters
-        args.voltage_gain_bandwidth = 5000
+        args.voltage_gain_bandwidth         = 5000
         args.voltage_compensation_frequency = 50000
-        args.voltage_pole_zero_ratio = 0.16
-        args.current_gain_bandwidth = 40000
+        args.voltage_pole_zero_ratio        = 0.16
+        args.current_gain_bandwidth         = 40000
         args.current_compensation_frequency = 250000
-        args.current_pole_zero_ratio = 4
+        args.current_pole_zero_ratio        = 4
 
     # Convert transient response string to enum
     transient_response_map = {
@@ -199,6 +213,7 @@ def _main(argsv):
         'NORMAL': nidcpower.TransientResponse.NORMAL,
         'CUSTOM': nidcpower.TransientResponse.CUSTOM,
     }
+
     transient_response = transient_response_map.get(
         args.transient_response.upper(),
         nidcpower.TransientResponse.NORMAL
@@ -230,24 +245,18 @@ def main():
 
 
 def test_example():
-    """
-    Simulated hardware test —runs example() with a virtual PXIe-4139.
-    """
+    """ Simulated hardware test —runs example() with a virtual PXIe-4139."""
     options = {'simulate': True, 'driver_setup': {'Model': '4139', 'BoardType': 'PXIe'}}
     example('NISMU', options, 1.0, 6.0, 100, 0.0001, 0.0001, nidcpower.TransientResponse.NORMAL, 5000, 50000, 0.16, 40000, 250000, 4)
 
 
 def test_main():
-    """
-    Simulated CLI test —runs _main() with simulate option string.
-    """
+    """ Simulated CLI test —runs _main() with simulate option string."""
     cmd_line = [  "-n", "NISMU","-op","Simulate=1,DriverSetup=Model:4139;BoardType:PXIe"]
-
     _main(cmd_line)
-"""  
+
 # ------------------------------------------------------------
 # Script execution starts here
 # ------------------------------------------------------------
-"""  
 if __name__ == "__main__":
     main()
