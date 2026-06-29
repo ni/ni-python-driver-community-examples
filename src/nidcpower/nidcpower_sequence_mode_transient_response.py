@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
 """ NI-DCPower Sequence Mode - Transient Response Plot
 
-This example demonstrates how to capture and plot the transient response of an NI SMU while operating in Sequence Source Mode.
+This example demonstrates how to capture and plot the transient response of an NI SMU 
+while operating in Sequence Source Mode.
 
-The example:
-
-* Configures an NI-DCPower session in Sequence Mode.
-* Sources a sequence of voltage levels.
-* Continuously measures voltage and current using Measure Triggers.
-* Captures measurement records during sequence execution.
-* Plots both voltage and current versus time.
-* Allows evaluation of different transient response settings (SLOW, NORMAL, FAST, CUSTOM).
+Configures an NI-DCPower session for voltage sequencing, sets transient response parameters, 
+measures voltage/current continuously during execution, and plots the captured transient response.
 
 HOW TO RUN:
 -----------
@@ -19,28 +14,36 @@ i.   From terminal (with default values):
 
 ii.  From terminal (with custom values):
     python nidcpower_sequence_mode_transient_response.py  \
-        -n "NISMU"  -sv [0.0, 1.0, 2.0] sd [0.0001, 0.0001, 0.0001]  -vr 6.0  -m 250 -at 0.0001 -tr NORMAL    
+        -n "NISMU"  -sv [0.0, 1.0, 2.0] sd [0.0001, 0.0001, 0.0001]  -vr 6.0  \
+            -m 250 -at 0.0001 -tr NORMAL    
     python nidcpower_sequence_mode_transient_response.py  \
-        -n "NISMU"  -sv [0.0, 1.0, 2.0] sd [0.0001, 0.0001, 0.0001]  -vr 6.0  -m 250 -at 0.0001 -tr CUSTOM -vgb 5000 -vcf 50000 -vpzr 0.16 -cgb 40000 -ccf 250000 -cpzr 4
+        -n "NISMU"  -sv [0.0, 1.0, 2.0] sd [0.0001, 0.0001, 0.0001]  -vr 6.0  \
+            -m 250 -at 0.0001 -tr CUSTOM -vgb 5000 -vcf 50000 -vpzr 0.16 \
+                -cgb 40000 -ccf 250000 -cpzr 4
 
 iii. To simulate without hardware:
-        python nidcpower_sequence_mode_transient_response.py -op "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
+        python nidcpower_sequence_mode_transient_response.py \
+            -op "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
 """
 
-import argparse # For parsing command line arguments
-import sys # For accessing command line arguments
+# Module imports
+import argparse                  # argparse is used to parse command line arguments
+import sys                       # sys is used to access command line arguments
 
-import matplotlib.pyplot as plt # For plotting voltage and current
-import matplotlib.ticker as ticker # For formatting axis ticks
+import matplotlib.pyplot as plt  # for plotting the voltage and current waveforms
+from matplotlib import ticker    # for formatting the axes of the plots
 
-import nidcpower # For DCPower instruments
+import nidcpower                 # For DCPower instrument control
 
 
-def example(resource_name,options,sequence_voltages,source_delays,voltage_range,measure_record_length,aperture_time,transient_response,
-            voltage_gain_bandwidth,voltage_compensation_frequency,voltage_pole_zero_ratio,current_gain_bandwidth,
+def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
+            measure_record_length,aperture_time,transient_response,
+            voltage_gain_bandwidth,voltage_compensation_frequency,
+            voltage_pole_zero_ratio,current_gain_bandwidth,
             current_compensation_frequency,current_pole_zero_ratio):
     """
-    Core measurement logic — opens session, configures, sources, measures, and plots results.
+    Core measurement logic — opens session, configures sequence mode and transient response parameters, 
+    sources voltage, measures current, and plots results.
 
     Args:
         resource_name (str): NI-DCPower resource name.
@@ -62,20 +65,21 @@ def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
     voltage_points = [] # List to store voltage measurements
     current_points = [] # List to store current measurements
 
-    plt.rcParams["figure.figsize"] = [7.50, 3.50]
-    plt.rcParams["figure.autolayout"] = True
+    plt.rcParams["figure.figsize"] = [7.50, 3.50] # Set default figure size for plots
+    plt.rcParams["figure.autolayout"] = True # Enable automatic layout adjustment for plots
 
-    fig, (ax0, ax1) = plt.subplots(nrows=2, figsize=(7, 9.6))
+    fig, (ax0, ax1) = plt.subplots(nrows=2, figsize=(7, 9.6)) # Create a figure with two subplots (one for voltage, one for current)
 
+    # 'with' ensures automatic cleanup of session resources
     with nidcpower.Session(resource_name=resource_name, options=options) as session:
 
         session.source_mode = nidcpower.SourceMode.SEQUENCE # Set source mode to SEQUENCE
         session.output_function = nidcpower.OutputFunction.DC_VOLTAGE # Set output function to DC voltage
         session.voltage_level_range = voltage_range # Set voltage range
         session.set_sequence(sequence_voltages,source_delays) # Set sequence voltages and source delays
-
         session.aperture_time_units = nidcpower.ApertureTimeUnits.SECONDS # set the aperture time units to seconds
         session.aperture_time = aperture_time # set the aperture time
+        
         session.transient_response = transient_response # Set the transient response mode (SLOW, NORMAL, FAST, CUSTOM)
 
         # Only set custom transient parameters if transient_response is CUSTOM
@@ -91,22 +95,24 @@ def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
         session.exported_start_trigger_output_terminal = f"/{resource_name}/PXI_Trig0" # Export the start trigger to PXI_Trig0
         session.measure_trigger_type = nidcpower.TriggerType.DIGITAL_EDGE # Set measure trigger type to DIGITAL_EDGE
         session.digital_edge_measure_trigger_input_terminal = f"/{resource_name}/PXI_Trig0" # Set digital edge measure trigger input terminal
-        session.measure_record_length = measure_record_length 
-        session.measure_record_length_is_finite = False
+        session.measure_record_length = measure_record_length  # Set the number of samples to acquire per record
+        session.measure_record_length_is_finite = False  # Set the measure record length to be infinite (continuous acquisition)
 
-        session.output_enabled = True
+        session.output_enabled = True  # Enable the output
         
-        # Commit
+        # Commit sends all settings to hardware before initiate.
         session.commit()
-        # Initiate
+
+        # Opens communication with the instrument
         session.initiate()
+
         measurements = session.channels[0].fetch_multiple(count=session.measure_record_length) # Fetch multiple measurements from the first channel
 
         print(f"Measurements Acquired: {len(measurements)}")  #Print the number of measurements acquired
         print(f"Aperture Time: {session.aperture_time:.2e} seconds")  #Print the aperture time in seconds
 
-        if session.aperture_time > 0:
-            print(f"Sample Rate: {1 / session.aperture_time:.2e} S/s")
+        if session.aperture_time > 0: #Print the sample rate in samples per second if aperture time is greater than 0
+            print(f"Sample Rate: {1 / session.aperture_time:.2e} S/s") #Print the sample rate in samples per second
 
         # Print transient settings only if CUSTOM mode
         if transient_response == nidcpower.TransientResponse.CUSTOM:
@@ -123,14 +129,14 @@ def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
         else:
             print(f"\nTransient Response Mode: {transient_response}")
 
-        voltage_points = []
-        current_points = []
-
+        # Store Data for Plotting
         for measurement in measurements: # Iterate through the measurements and append voltage and current to their respective lists
             voltage_points.append(measurement[0])
             current_points.append(measurement[1])
 
-        time_points = [session.aperture_time * x for x in range(len(measurements))] # Create time points based on the aperture time and number of measurements
+
+        # Calculate time points for plotting based on aperture time and number of measurement
+        time_points = [session.aperture_time * x for x in range(len(measurements))]
 
         # Plot Voltage
         ax0.xaxis.set_major_formatter(ticker.EngFormatter(unit="s"))
@@ -148,11 +154,12 @@ def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
         ax1.grid()
         ax1.plot(time_points, current_points)
 
-        fig.suptitle("NI-DCPower Sequence Mode Transient Response")
-        plt.show()
-        plt.close(fig)
+        fig.suptitle("NI-DCPower Sequence Mode Transient Response") # Set the title of the figure
 
-        session.abort()
+        plt.show() # display the plots eith the voltage and current waveforms
+
+        plt.close(fig) # Close the figure to free up memory
+
 
 def _main(argsv):
     parser = argparse.ArgumentParser(description="NI-DCPower Sequence Mode Transient Response Plot")
@@ -181,6 +188,7 @@ def _main(argsv):
         # Second pass: parse all arguments including custom parameters
         args = parser.parse_args(argsv)
     else:
+        # For non-CUSTOM modes, check if user tried to use custom parameters
         if remaining_args:
             print(f"Warning: Custom transient parameters are only used with --transient-response CUSTOM mode. Ignoring: {remaining_args}")
 
@@ -234,10 +242,10 @@ def test_example():
 
 def test_main():
     """Simulated CLI test — runs _main() with simulate option string."""
-
     cmd_line = [  "-n", "NISMU","-op","Simulate=1,DriverSetup=Model:4139;BoardType:PXIe"]
-
     _main(cmd_line)
+
+
 # ------------------------------------------------------------
 # Script execution starts here
 # ------------------------------------------------------------
