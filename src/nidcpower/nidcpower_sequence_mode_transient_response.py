@@ -164,26 +164,26 @@ def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
 def _main(argsv):
     parser = argparse.ArgumentParser(description="NI-DCPower Sequence Mode Transient Response Plot")
 
-    parser.add_argument("-n","--resource-name",default="PXI1Slot1")
-    parser.add_argument("-op","--options",default="")
-    parser.add_argument("-sv","--sequence-voltages",type=float, nargs="+", default=[0.0, 1.0, 2.0], help="Voltage levels for the sequence (space-separated)")
-    parser.add_argument("-sd","--source-delays",type=float, nargs="+", default=[1e-3, 1e-3, 1e-3], help="Per-step source delays in seconds (space-separated)")
-    parser.add_argument( "-vr", "--voltage-range", type=float, default=6.0, help="Voltage range (V)" )
-    parser.add_argument( "-m","--measure-record-length",type=int,default=5000,help="Number of samples to acquire per record")
-    parser.add_argument("-at","--aperture-time",type=float,default=0.0001,help="Aperture time in seconds (0 = driver default)")
-    parser.add_argument( "-tr", "--transient-response", default="CUSTOM", help="Transient response mode (SLOW, FAST, NORMAL, or CUSTOM)" )
+    parser.add_argument('-n', '--resource-name', default='PXI1Slot1', help='Resource name of NI SMU')
+    parser.add_argument('-op', '--option-string', default='', type=str, help='Driver option string, eg: "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"')
+    parser.add_argument('-sv', '--sequence-voltages', type=float, nargs='+', default=[0.0, 1.0, 2.0], help='Voltage levels for the sequence (space-separated)')
+    parser.add_argument('-sd', '--source-delays', type=float, nargs='+', default=[1e-3, 1e-3, 1e-3], help='Per-step source delays in seconds (space-separated)')
+    parser.add_argument('-vr', '--voltage-range', type=float, default=6.0, help='Voltage range (V)')
+    parser.add_argument('-m','--measure-record-length', type=int, default=5000, help='Number of samples to acquire per record')
+    parser.add_argument('-at',"--aperture-time", type=float, default=0.0001, help='Aperture time in seconds (0 = driver default)')
+    parser.add_argument('-tr', '--transient-response', default='CUSTOM', help='Transient response mode (SLOW, FAST, NORMAL, or CUSTOM)')
 
     # First pass: parse to get transient response mode
     args, remaining_args = parser.parse_known_args(argsv)
 
     # Add custom transient parameters only if CUSTOM mode is selected
     if args.transient_response.upper() == 'CUSTOM':
-        parser.add_argument("-vgb", "--voltage-gain-bandwidth", type=float, default=5000, help="Voltage gain bandwidth (for CUSTOM transient)")
-        parser.add_argument("-vcf", "--voltage-compensation-frequency", type=float, default=50000, help="Voltage compensation frequency (for CUSTOM transient)")
-        parser.add_argument("-vpzr", "--voltage-pole-zero-ratio", type=float, default=0.16, help="Voltage pole-zero ratio (for CUSTOM transient)")
-        parser.add_argument("-cgb", "--current-gain-bandwidth", type=float, default=40000, help="Current gain bandwidth (for CUSTOM transient)")
-        parser.add_argument("-ccf", "--current-compensation-frequency", type=float, default=250000, help="Current compensation frequency (for CUSTOM transient)")
-        parser.add_argument("-cpzr", "--current-pole-zero-ratio", type=float, default=4, help="Current pole-zero ratio (for CUSTOM transient)")
+        parser.add_argument('-vgb', '--voltage-gain-bandwidth', type=float, default=5000, help='Voltage gain bandwidth (for CUSTOM transient)')
+        parser.add_argument('-vcf', '--voltage-compensation-frequency', type=float, default=50000, help='Voltage compensation frequency (for CUSTOM transient)')
+        parser.add_argument('-vpzr', '--voltage-pole-zero-ratio', type=float, default=0.16, help='Voltage pole-zero ratio (for CUSTOM transient)')
+        parser.add_argument('-cgb', '--current-gain-bandwidth', type=float, default=40000, help='Current gain bandwidth (for CUSTOM transient)')
+        parser.add_argument('-ccf', '--current-compensation-frequency', type=float, default=250000, help='Current compensation frequency (for CUSTOM transient)')
+        parser.add_argument('-cpzr', '--current-pole-zero-ratio', type=float, default=4, help='Current pole-zero ratio (for CUSTOM transient)')
 
         # Second pass: parse all arguments including custom parameters
         args = parser.parse_args(argsv)
@@ -237,7 +237,8 @@ def main():
 def test_example():
     """Simulated hardware test — runs example() with a virtual PXIe-4139."""
     options = "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
-    example("PXI1Slot1",options,[0.0, 1.0, 2.0],[1e-3, 1e-3,1e-3],6.0,5000,0.0001,nidcpower.TransientResponse.NORMAL,5000,50000,0.16,40000,250000,4)
+    example("PXI1Slot1",options,[0.0, 1.0, 2.0],[1e-3, 1e-3,1e-3],6.0,5000,0.0001,
+            nidcpower.TransientResponse.NORMAL,5000,50000,0.16,40000,250000,4)
 
 
 def test_main():
