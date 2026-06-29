@@ -134,7 +134,6 @@ def example(resource_name,options,sequence_voltages,source_delays,voltage_range,
             voltage_points.append(measurement[0])
             current_points.append(measurement[1])
 
-
         # Calculate time points for plotting based on aperture time and number of measurement
         time_points = [session.aperture_time * x for x in range(len(measurements))]
 
@@ -237,13 +236,13 @@ def main():
 def test_example():
     """Simulated hardware test — runs example() with a virtual PXIe-4139."""
     options = "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"
-    example("PXI1Slot1",options,[0.0, 1.0, 2.0],[1e-3, 1e-3,1e-3],6.0,5000,0.0001,
-            nidcpower.TransientResponse.NORMAL,5000,50000,0.16,40000,250000,4)
+    example("PXI1Slot1", options, [0.0, 1.0, 2.0],[1e-3, 1e-3, 1e-3], 6.0, 5000, 0.0001,
+            nidcpower.TransientResponse.NORMAL, 5000, 50000, 0.16, 40000, 250000, 4)
 
 
 def test_main():
     """Simulated CLI test — runs _main() with simulate option string."""
-    cmd_line = [  "-n", "NISMU","-op","Simulate=1,DriverSetup=Model:4139;BoardType:PXIe"]
+    cmd_line = [  "-n", "NISMU", "-op", "Simulate=1,DriverSetup=Model:4139;BoardType:PXIe"]
     _main(cmd_line)
 
 
