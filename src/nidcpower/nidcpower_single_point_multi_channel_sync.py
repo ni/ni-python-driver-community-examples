@@ -160,7 +160,7 @@ def example(
             slave_sessions[slave].source_trigger_type = nidcpower.TriggerType.DIGITAL_EDGE
             slave_sessions[slave].digital_edge_source_trigger_input_terminal = source_trigger_terminal
 
-            # Take a measurement when the source unit on the master device completes
+            # Measure on the master's SourceCompleteEvent to synchronize readings
             slave_sessions[slave].measure_trigger_type = nidcpower.TriggerType.DIGITAL_EDGE
             slave_sessions[slave].digital_edge_measure_trigger_input_terminal = source_complete_terminal
             slave_sessions[slave].commit()
