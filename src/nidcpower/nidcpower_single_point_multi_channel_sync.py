@@ -109,20 +109,16 @@ def example(
 
     slave_sessions = []  # List to hold slave sessions for proper cleanup after 'with' block
 
-    # --------------------------------------------------------
     # ->Initialize Master SMU Session
     # - Opens communication with the master instrument
     # - 'with' ensures automatic cleanup of master session resources
-    # --------------------------------------------------------
     with nidcpower.Session(resource_name=master_resource_name, channels=master_channel, reset=False, options=master_options) as master_session:
 
-        # ----------------------------------------------------
         # -> Configure Master SMU Settings
         # - source_mode         → SINGLE_POINT
         # - output_function     → DC_VOLTAGE
         # - source_trigger_type → NONE (master triggers freely, exports events)
         # - Set voltage, current limit, and source delay
-        # ----------------------------------------------------
         master_session.source_mode = nidcpower.SourceMode.SINGLE_POINT
         master_session.output_function = nidcpower.OutputFunction.DC_VOLTAGE
         master_session.voltage_level = master_voltage_level
@@ -138,7 +134,6 @@ def example(
         # commit master session settings before configuring slaves to ensure events are properly exported
         master_session.commit()
 
-        # ----------------------------------------------------
         # -> Initialize and Configure Slave SMU Sessions
         # - Open each slave session
         # - source_mode             → SINGLE_POINT
@@ -146,7 +141,6 @@ def example(
         # - source_trigger_type     → DIGITAL_EDGE (triggered by master's SourceTrigger)
         # - measure_trigger_type    → DIGITAL_EDGE (triggered by master's SourceCompleteEvent)
         # - Set source delay to near-zero so slaves are ready for the next trigger quickly
-        # ----------------------------------------------------
         for slave in range(len(slave_resource_names)):
             slave_sessions.append(nidcpower.Session(resource_name=slave_resource_names[slave],
                                                     channels=slave_channels[slave],
@@ -171,32 +165,26 @@ def example(
             slave_sessions[slave].digital_edge_measure_trigger_input_terminal = source_complete_terminal
             slave_sessions[slave].commit()
 
-        # ----------------------------------------------------
         # -> Initiate Slave Sessions then Master Session
         # - Slaves initiate first and wait for master's SourceTrigger
         # - Master initiates and drives the synchronized sequence
-        # ----------------------------------------------------
         for slave in range(len(slave_resource_names)):
             # Initiate the slave device(s)
             # Once the for loop completes, the slave device(s) will be waiting for the Source trigger.
             slave_sessions[slave].initiate()
 
-        master_session.initiate()
+        master_session.initiate() # master initiates and drives the synchronized sequence
 
-        # ----------------------------------------------------
         # -> Fetch Master Measurements
         # - Retrieves single-point measurement from master channel
         # - change timeout as needed based on expected source delay and measurement time
-        # ----------------------------------------------------
         master_meas = master_session.fetch_multiple(count=1, timeout=5)
         print(f"Master-{master_resource_name} (channel {master_channel}) Measurements: "
               f"\n- Voltage: {master_meas[0][0]:.4f} V"
               f"\n- Current: {master_meas[0][1]:.4e} A\n- In Compliance: {master_meas[0][2]}")
 
-        # ----------------------------------------------------
         # -> Fetch Slave Measurements
         # - Retrieves single-point measurement from each slave channel
-        # ----------------------------------------------------
         slave_measurements = []  # List to hold measurements from each slave for return at the end of the function
 
         # for each slave, fetch the measurement results and print them.
