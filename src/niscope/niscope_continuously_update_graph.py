@@ -41,7 +41,7 @@ def example(resource_name, options, num_samples, vertical_range,
 
     Args:
         resource_name (str): Resource name of the Scope (e.g., 'PXIe5162')
-        options (dict): Session options dictionary for driver configuration
+        options (dict): Driver options for the Scope session (e.g., {'Simulate': '1', 'DriverSetup': 'Model:5162; BoardType:PXIe'})
         num_samples (int, optional): Number of samples to read. Defaults to 250.0
         vertical_range (float, optional): Voltage range in volts. Defaults to 5.0
         vertical_coupling (str, optional): Coupling mode - 'AC', 'DC', or 'GND'. Defaults to 'DC'
