@@ -12,7 +12,7 @@ i.   From terminal (with default values):
  
 ii.  From terminal (with custom oscilloscope configuration):
         python niscope_continuously_update_graph.py \
-            -n "PXIe5162" -ns 250.0 -vr 5.0 -vc DC -sr 50000000 \
+            -n "PXIe5162" -ns 250 -vr 5.0 -vc DC -sr 50000000 \
                 -ref 50.0 -ch "0" -ii 1000000 -pa 10.0
  
 iii. To simulate without hardware:
@@ -130,8 +130,8 @@ def _main(argv):
     parser = argparse.ArgumentParser(description='NI-SCOPE Continuously Update Graph Example')
 
     parser.add_argument('-n', '--resource_name', default='PXIe5162', help='Resource name of the NI oscilloscope (default: PXIe5162)')
-    parser.add_argument('-ns', '--num-samples', type=int, default=250, help='Number of samples to read (default: 250)')
     parser.add_argument('-op', '--option-string', default='', type=str, help='Driver option string, eg: "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"')
+    parser.add_argument('-ns', '--num-samples', type=int, default=250, help='Number of samples to read (default: 250)')
     parser.add_argument('-vr', '--vertical-range', type=float, default=5.0, help='Vertical range in volts (default: 5.0)')
     parser.add_argument('-vc', '--vertical-coupling', choices=['AC', 'DC', 'GND'], default='DC', help='Vertical coupling mode (default: DC)')
     parser.add_argument('-sr', '--sample-rate', type=int, default=50000000, help='Minimum sample rate in Hz (default: 50000000)')
@@ -152,7 +152,8 @@ def _main(argv):
         ref_position=args.ref_position,
         channels=args.channels,
         input_impedance=args.input_impedance,
-        probe_attenuation=args.probe_attenuation)
+        probe_attenuation=args.probe_attenuation
+        )
 
 
 def main():
@@ -163,7 +164,7 @@ def main():
 def test_example():
     """Simulated hardware test — runs example() with a virtual PXIe-5162 (no real HW needed)."""
     options = {'Simulate': '1','DriverSetup': 'Model:5162; BoardType:PXIe'}
-    example('PXIe5162', options, 100, 5.0, 'DC', 50000000, 50.0, '0', 1000000, 10.0)
+    example('PXIe5162', options, 250, 5.0, 'DC', 50000000, 50.0, '0', 1000000, 10.0)
 
 
 def test_main():
