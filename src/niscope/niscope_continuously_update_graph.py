@@ -13,8 +13,8 @@ i.   From terminal (with default values):
         python niscope_continuously_update_graph.py
 
 ii.  From terminal (with custom values):
-        python niscope_continuously_update_graph.py -r "PXIe5162" -s 250 \
-            -vr 5.0 -vc DC -sr 50000000 -rp 50.0 -c "0"
+        python niscope_continuously_update_graph.py -n "PXIe5162" -ns 250 \
+            -vr 5.0 -vc DC -sr 50000000 -rp 50.0 -ch "0" -ii 1000000 -pa 10.0
 
 iii. To simulate without hardware:
         python niscope_continuously_update_graph.py \
@@ -76,9 +76,6 @@ def example(resource_name, options, num_samples, vertical_range, vertical_coupli
         probe_attenuation (float):
             Probe scale factor (1, 10, 100, etc.)
             eg: 10.0 → 10x probe attenuation
-
-    Returns:
-        None — results are displayed as an animated waveform graph
     """
 
 
@@ -190,13 +187,13 @@ def _main(argv):
         description='Continuously read and graph waveform from NI-SCOPE channel with real-time animation.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument('-r', '--resource-name',       default='PXIe5162',     help='Resource name of NI oscilloscope')
-    parser.add_argument('-s', '--num-samples',         default=250,   type=int,   help='Number of samples to read')
+    parser.add_argument('-n', '--resource-name',       default='PXIe5162',     help='Resource name of NI oscilloscope')
+    parser.add_argument('-ns', '--num-samples',         default=250,   type=int,   help='Number of samples to read')
     parser.add_argument('-vr', '--vertical-range',     default=5.0,   type=float, help='Vertical range (V)')
     parser.add_argument('-vc', '--vertical-coupling',  default='DC',  type=str, choices=['AC', 'DC', 'GND'], help='Vertical coupling mode (AC, DC, or GND)')
     parser.add_argument('-sr', '--sample-rate',        default=50000000, type=float, help='Sample rate (samples/s)')
     parser.add_argument('-rp', '--ref-position',       default=50.0,  type=float, help='Reference position for trigger (0.0-100.0)')
-    parser.add_argument('-c', '--channels',            default='0',   type=str,   help='Channel to read from (comma-separated for multiple)')
+    parser.add_argument('-ch', '--channels',            default='0',   type=str,   help='Channel to read from (comma-separated for multiple)')
     parser.add_argument('-ii', '--input-impedance',    default=1000000, type=int, choices=[50, 1000000], help='Input impedance in ohms (50 or 1000000)')
     parser.add_argument('-pa', '--probe-attenuation',  default=10.0,  type=float, help='Probe scale factor (1, 10, 100, etc.)')
     parser.add_argument('-op', '--option-string',      default='',    type=str,   help='Driver option string, eg: "Simulate=1, DriverSetup=Model:5162; BoardType:PXIe"')
