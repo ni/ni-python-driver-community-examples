@@ -130,7 +130,7 @@ def _main(argv):
     parser = argparse.ArgumentParser(description='NI-SCOPE Continuously Update Graph Example')
 
     parser.add_argument('-n', '--resource_name', default='PXIe5162', help='Resource name of the NI oscilloscope (default: PXIe5162)')
-    parser.add_argument('-op', '--option-string', default='', type=str, help='Driver option string, eg: "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"')
+    parser.add_argument('-op', '--option-string', default='', type=str, help='Driver option string, eg: "Simulate=1, DriverSetup=Model:5162; BoardType:PXIe"')
     parser.add_argument('-ns', '--num-samples', type=int, default=250, help='Number of samples to read (default: 250)')
     parser.add_argument('-vr', '--vertical-range', type=float, default=5.0, help='Vertical range in volts (default: 5.0)')
     parser.add_argument('-vc', '--vertical-coupling', choices=['AC', 'DC', 'GND'], default='DC', help='Vertical coupling mode (default: DC)')
