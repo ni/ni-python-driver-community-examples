@@ -17,10 +17,9 @@ ii.  From terminal (with custom values):
             -vr 10.0 -sr 50000000 -ch "0" -vc DC -ref 50.0 -pa 10.0 -ii 1000000
 
 iii. To simulate without hardware:
-        PowerShell:  python niscope_read_and_plot_waveform.py \
-            -op 'Simulate=1, DriverSetup=Model:5162; BoardType:PXIe'
-        cmd.exe:     python niscope_read_and_plot_waveform.py \
-            -op "Simulate=1, DriverSetup=Model:5162; BoardType:PXIe"
+        python niscope_read_and_plot_waveform.py \
+            -op "Simulate=1, DriverSetup=Model:5162 (2CH); BoardType:PXIe"
+
 """
 
 # Module imports
@@ -121,7 +120,7 @@ def example(resource_name, options, num_samples, vertical_range, sample_rate, ch
         # -> Calculate Time Axis
         # - x_increment is the delta-t (time interval between samples)
         # - Multiplying by sample index creates the time axis for plotting
-        x_time = [waveforms[0].x_increment * x for x in range(num_samples)]
+        time_points = [waveforms[0].x_increment * x for x in range(num_samples)]
 
         # -> Plot and Display Results
         # - Configures axis formatting with engineering notation (e.g., µs, mV)
@@ -133,9 +132,11 @@ def example(resource_name, options, num_samples, vertical_range, sample_rate, ch
         ax.set_xlabel("Time (s)")
         ax.set_ylabel("Voltage (V)")
         ax.grid()
-        ax.plot(x_time, samples)
+        ax.plot(time_points, samples)
+ 
+        plt.show() # Displays the plot window with the waveform data
 
-        plt.show()
+        plt.close("all") # Closes all open plot windows to free resources
 
 
 def _main(argsv):
@@ -180,7 +181,7 @@ def test_example():
     plt.switch_backend("Agg")
     options = {'simulate': True, 'driver_setup': {'Model': '5162', 'BoardType': 'PXIe'}}
     example('PXIe5162', options, 250, 5.0, 50000000, '0', 'DC', 50.0, 10.0, 1000000)
-    plt.close("all")
+    plt.close("all")  # Close all figures to free up memory after the test
 
 
 def test_main():
@@ -188,7 +189,7 @@ def test_main():
     plt.switch_backend("Agg")
     cmd_line = ['--option-string', 'Simulate=1, DriverSetup=Model:5162; BoardType:PXIe']
     _main(cmd_line)
-    plt.close("all")
+    plt.close("all")  # Close all figures to free up memory after the test
 
 
 # ------------------------------------------------------------

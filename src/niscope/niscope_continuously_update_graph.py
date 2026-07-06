@@ -18,7 +18,7 @@ ii.  From terminal (with custom values):
 
 iii. To simulate without hardware:
         python niscope_continuously_update_graph.py \
-            -op 'Simulate=1, DriverSetup=Model:5162; BoardType:PXIe'
+            -op "Simulate=1, DriverSetup=Model:5162 (2CH); BoardType:PXIe"
 """
 
 # Module imports
@@ -77,7 +77,6 @@ def example(resource_name, options, num_samples, vertical_range, vertical_coupli
             Probe scale factor (1, 10, 100, etc.)
             eg: 10.0 → 10x probe attenuation
     """
-
 
     # -> Set Up Graph
     # - Configures figure size and creates subplot for waveform display
@@ -138,15 +137,13 @@ def example(resource_name, options, num_samples, vertical_range, vertical_coupli
         channel_list = [ch.strip() for ch in channels.split(',')]
         waveforms = session.channels[channel_list[0]].read(num_samples=num_samples)
 
-        # -> Calculate Time Axis
-        # - x_increment is the delta-t (time interval between samples)
-        # - Multiplying by sample index creates the time axis for plotting
-        x_time = [waveforms[0].x_increment * x for x in range(num_samples)]
+        # Prepare time points for plotting based on the sample interval and the number of samples.
+        time_points = [waveforms[0].x_increment * x for x in range(num_samples)]
 
         # -> Create Animated Plot
         # - Create line object for animation
         # - Configure axis formatting with engineering notation (e.g., µs, mV)
-        line, = ax.plot(x_time, update_samples(waveforms=waveforms))
+        line, = ax.plot(time_points, update_samples(waveforms=waveforms))
 
         ax.xaxis.set_major_formatter(ticker.EngFormatter(unit="s"))
         ax.yaxis.set_major_formatter(ticker.EngFormatter(unit="V"))
@@ -178,7 +175,10 @@ def example(resource_name, options, num_samples, vertical_range, vertical_coupli
         # - Set window title and show the plot with animation loop
         fig.canvas.manager.set_window_title("NI-SCOPE Continuously Updated Waveform")
         plt.title("Waveform Graph")
-        plt.show()
+
+        plt.show()  # Blocks execution until the plot window is closed, allowing real-time updates to be displayed.
+
+        plt.close("all")  # Displays the plot window with the waveform data
 
 
 def _main(argv):
@@ -223,7 +223,7 @@ def test_example():
     plt.switch_backend("Agg")
     options = {'simulate': True, 'driver_setup': {'Model': '5162', 'BoardType': 'PXIe'}}
     example('PXIe5162', options, 250, 5.0, 'DC', 50000000, 50.0, '0', 1000000, 10.0)
-    plt.close("all")
+    plt.close("all")  # Close all figures to free up memory after the test
 
 
 def test_main():
@@ -231,7 +231,7 @@ def test_main():
     plt.switch_backend("Agg")
     cmd_line = ['--option-string', 'Simulate=1, DriverSetup=Model:5162; BoardType:PXIe']
     _main(cmd_line)
-    plt.close("all")
+    plt.close("all")  # Close all figures to free up memory after the test
 
 
 # ------------------------------------------------------------
