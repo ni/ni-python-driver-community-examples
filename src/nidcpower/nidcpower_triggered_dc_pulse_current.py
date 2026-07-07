@@ -3,11 +3,11 @@
 
 This example uses an SMU which waits for a trigger from a DAQ card's counter
 output (at 10 Hz),controlled by the DAQ card's Test Panel in NI-MAX.
-This is most important step prior to run this example, as the DAQ card's
+This is most important step prior to running this example, as the DAQ card's
 counter output must be properly configured to generate the expected trigger signal.
 
 Note : Higher counter frequency might cause the buffer to overflow after
-some time passes.Removing the plotting of matplotlib will help in avoiding this.
+some time passes.Removing the matplotlib will help in avoiding this.
 
 The example uses the default resource names and pulse parameters.
 Modify these values as needed for your measurement setup.
@@ -141,7 +141,7 @@ def example(
 
         actual_sample_rate = 1 / session.aperture_time # Calculate actual sample rate based on aperture time
 
-        session.measure_record_length = int(floor(actual_sample_rate * (pulse_on_time + pulse_off_time)))
+        session.measure_record_length = max(2, int(floor(actual_sample_rate * (pulse_on_time + pulse_off_time))))
         session.sequence_loop_count_is_finite = False
         session.measure_buffer_size = int(20e6)
 
@@ -162,10 +162,7 @@ def example(
         # - Fetches first record and prints timing info
         session.initiate()
 
-        samples_acquired = 0 # Initialize counter for total samples acquired
-    
         measurements = session.channels[0].fetch_multiple(count=session.measure_record_length)
-        samples_acquired += len(measurements)
 
         aperture_time = "{:.2e}".format(session.aperture_time)      # Formats aperture time for more readability.
         sample_rate = "{:.2e}".format(1 / session.aperture_time)    # Formats sample rate for more readability.
@@ -231,11 +228,11 @@ def example(
 
         fig.canvas.manager.set_window_title(
             "NI-DCPower triggered dc pulse current"
-        ) # Sets the window title for the graph display
+        )  # Sets the window title for the graph display
 
-        plt.show() # Display the animated plot
+        plt.show()  # Display the animated plot
 
-        plt.close(fig) # Close the figure to free up memory after the plot window is closed
+        plt.close(fig)  # Close the figure to free up memory after the plot window is closed
 
 
 def _main(argsv):
