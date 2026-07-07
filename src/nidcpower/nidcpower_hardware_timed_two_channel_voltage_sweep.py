@@ -124,13 +124,14 @@ def example(
 
     if plots - 1 == 0:
         gate_sequence.append(gate_voltage_start)
-    elif points - 1 == 0:
-        drain_sequence.append(drain_voltage_start)
     else:
         voltages_0 = (gate_voltage_stop - gate_voltage_start) / (plots - 1)
         for i in range(plots):
             gate_sequence.append((voltages_0 * i) + gate_voltage_start)
 
+    if points - 1 == 0:
+        drain_sequence.append(drain_voltage_start)
+    else:
         voltages_1 = (drain_voltage_stop - drain_voltage_start) / (points - 1)
         for i in range(points):
             drain_sequence.append((voltages_1 * i) + drain_voltage_start)
@@ -245,7 +246,7 @@ def example(
                     "{:.3f}".format(drain_measurements[plot][point].voltage),
                 ))
 
-            ax.plot(drain_voltages, drain_currents, marker='o', label=f"{gate_measurements[plot].voltage:3f} V")
+            ax.plot(drain_voltages, drain_currents, marker='o', label=f"{gate_measurements[plot].voltage:.3f} V")
             drain_voltages = []
             drain_currents = []
 
@@ -255,7 +256,6 @@ def example(
         # -> Configure Interactive Graph Display
         # - Adds legend with clickable toggle for each IV curve
         # - Connects pick event to show/hide individual plots
-        graphs = {}
         lines = ax.get_lines()
         leg = ax.legend(fancybox=True, shadow=True)
         lined = {}
@@ -285,11 +285,11 @@ def example(
 
         fig.canvas.manager.set_window_title(
             "NI-DCPower Hardware-Timed two channel Voltage Sweep"
-        ) # Sets the window title for the graph display
+        )  # Sets the window title for the graph display
 
-        plt.show() # Display the plot window
+        plt.show()  # Display the plot window
 
-        plt.close(fig) # Close the figure to free up memory after the plot window is closed
+        plt.close(fig)  # Close the figure to free up memory after the plot window is closed
 
 
 def _main(argsv):
