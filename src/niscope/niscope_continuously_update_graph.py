@@ -169,7 +169,7 @@ def example(resource_name, options, num_samples, vertical_range, vertical_coupli
         # -> Create Animation
         # - FuncAnimation continuously calls animate() at specified intervals
         # - interval=100 means update every 100 milliseconds (10 Hz)
-        ani = animation.FuncAnimation(fig, animate, interval=100, blit=True, save_count=50)
+        ani = animation.FuncAnimation(fig, animate, interval=100, blit=False, save_count=50)
 
         # -> Display Animated Plot
         # - Set window title and show the plot with animation loop
