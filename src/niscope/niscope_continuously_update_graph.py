@@ -178,7 +178,7 @@ def example(resource_name, options, num_samples, vertical_range, vertical_coupli
 
         plt.show()  # Blocks execution until the plot window is closed, allowing real-time updates to be displayed.
 
-        plt.close("all")  # Displays the plot window with the waveform data
+        plt.close("all")  # Close all figures to free up memory after the plot window is closed.
 
 
 def _main(argv):
