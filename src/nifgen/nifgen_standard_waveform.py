@@ -12,7 +12,7 @@ i. From terminal (with default values):
 
 ii. From terminal (with custom values):
     python nifgen_standard_waveform.py \
-        -n "PXI1Slot1" -w "sine" -a 2.0 -f 1e6 --op ""
+        -n "PXI1Slot11" -w "sine" -a 2.0 -f 1e6 ""
 
 iii. To simulate without hardware:
     python nifgen_standard_waveform.py \
@@ -84,7 +84,7 @@ def _main(argsv):
     """Command line interface — parses arguments and calls example()."""
     parser = argparse.ArgumentParser(description="NI-FGEN Standard Waveform Generation Example")
 
-    parser.add_argument("-n",   "--resource-name",         default="PXI1Slot1",    help="NI-FGEN resource name")
+    parser.add_argument("-n",   "--resource-name",         default="PXI1Slot11",    help="NI-FGEN resource name")
     parser.add_argument("-w",   "--waveform-type",         default="sine",         help="Waveform type (sine, square, triangle, dc, ramp_up, ramp_down, noise)")
     parser.add_argument("-a",   "--amplitude",  type=float, default=2.0,           help="Waveform amplitude in volts")
     parser.add_argument("-f",   "--frequency",  type=float, default=1e6,           help="Waveform frequency in Hz")
@@ -108,7 +108,7 @@ def main():
 def test_example():
     """Simulated hardware test — runs example() with a simulated PXIe-5433 (no real HW needed)."""
     options = "Simulate=1,DriverSetup=Model:5433 (1CH);BoardType:PXIe"
-    example("PXI1Slot1", "sine", 2.0, 1e6, options)
+    example("PXI1Slot11", "sine", 2.0, 1e6, options)
 
 
 def test_main():
