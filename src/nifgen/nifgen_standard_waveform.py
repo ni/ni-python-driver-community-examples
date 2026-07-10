@@ -84,7 +84,7 @@ def _main(argsv):
     parser = argparse.ArgumentParser(description="NI-FGEN Standard Waveform Generation Example")
 
     parser.add_argument("-n",   "--resource-name",         default="PXI1Slot11",    help="NI-FGEN resource name")
-    parser.add_argument("-w",   "--waveform-type",         default="sine",         help="Waveform type (sine, square, triangle, dc, ramp_up, ramp_down, noise)")
+    parser.add_argument("-w",   "--waveform-type", default="sine", choices=["sine", "square", "triangle", "dc", "ramp_up", "ramp_down", "noise"], help="Waveform type (sine, square, triangle, dc, ramp_up, ramp_down, noise)")
     parser.add_argument("-a",   "--amplitude",  type=float, default=2.0,           help="Waveform amplitude in volts")
     parser.add_argument("-f",   "--frequency",  type=float, default=1e6,           help="Waveform frequency in Hz")
     parser.add_argument("-op",  "--options",                default="",            help="Driver initialization options")
