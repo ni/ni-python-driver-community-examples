@@ -8,12 +8,11 @@ can be generated with configurable amplitude and frequency parameters.
 HOW TO RUN:
 -----------
 i. From terminal (with default values):
-    python nifgen_standard_waveform.py --
+    python nifgen_standard_waveform.py
 
 ii. From terminal (with custom values):
     python nifgen_standard_waveform.py \
-        -n "PXI1Slot11" -w "sine" -a 2.0 -f 1e6 ""
-
+        -n "PXI1Slot11" -w "sine" -a 2.0 -f 1e6
 iii. To simulate without hardware:
     python nifgen_standard_waveform.py \
         -op "Simulate=1,DriverSetup=Model:5433 (1CH);BoardType:PXIe"
