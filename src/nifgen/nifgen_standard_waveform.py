@@ -70,13 +70,21 @@ def example(resource_name, waveform_type, amplitude, frequency, options):
         print("\nWaveform generation started. Press Ctrl + c to end the program")  # Informs the user that waveform generation has started and how to stop it
 
         # Keep the program running until the user interrupts with Ctrl + c.
+        import time
+
         try:
-            while True: # Keep the program running until interrupted
-                pass
-        except KeyboardInterrupt: # Handle user interrupt (Ctrl + c)
-            session.output_enabled = False # Disable the output to stop waveform generation
-            session.abort() # Abort the session to stop waveform generation
-            print("Waveform generation ended") # Inform the user that waveform generation has ended
+            if "Simulate=1" in (options or "") or not sys.stdin.isatty():
+                # Avoid hanging automated/non-interactive runs and avoid busy-waiting.
+                time.sleep(0.1)
+            else:
+                while True:  # Keep the program running until interrupted
+                    time.sleep(0.1)
+        except KeyboardInterrupt:  # Handle user interrupt (Ctrl + c)
+            pass
+        finally:
+            session.output_enabled = False  # Disable the output to stop waveform generation
+            session.abort()  # Abort the session to stop waveform generation
+            print("Waveform generation ended")  # Inform the user that waveform generation has ended
 
 
 def _main(argsv):
