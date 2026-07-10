@@ -31,7 +31,7 @@ ii.  From terminal (with custom values):
 iii. To simulate without hardware:
         PowerShell:  python nidmm_triggered_fetch_waveform.py \
             -sop 'Simulate=1, DriverSetup=Model:4139; BoardType:PXIe' \
-            -dop 'Simulate=1, DriverSetup=Model:4080'
+            -dop 'Simulate=1, DriverSetup=Model:4081'
         cmd.exe:     python nidmm_triggered_fetch_waveform.py \
             -sop "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe" \
             -dop "Simulate=1, DriverSetup=Model:4081"
@@ -171,6 +171,9 @@ def example(
         for dmm_session in [dmm1_session, dmm2_session]:
             dmm_session.initiate()
 
+        # Commit SMU settings (ensures trigger routing is applied before initiate)
+        smu_session.commit()
+
         smu_session.initiate()
 
         # -> Fetch and Print Results
@@ -200,7 +203,7 @@ def _main(argsv):
     parser.add_argument('-drt',  '--dmm-rate',             default=1e6,   type=float, help='DMM waveform rate (S/s)')
     parser.add_argument('-dwp',  '--dmm-waveform-points',  default=50,    type=int,   help='DMM waveform points per acquisition')
     parser.add_argument('-sop',  '--smu-option-string',    default='',    type=str,   help='SMU driver option string, eg: "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"')
-    parser.add_argument('-dop',  '--dmm-option-string',    default='',    type=str,   help='DMM driver option string, eg: "Simulate=1, DriverSetup=Model:4080"')
+    parser.add_argument('-dop',  '--dmm-option-string',    default='',    type=str,   help='DMM driver option string, eg: "Simulate=1, DriverSetup=Model:4081"')
     args = parser.parse_args(argsv)
     example(
         smu_resource_name=args.smu_resource_name,
