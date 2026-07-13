@@ -22,11 +22,10 @@ iii. To simulate without hardware:
 # Module imports
 import argparse          # argparse is used to parse command line arguments
 import sys               # sys is used to access command line arguments
+import time              # time is used to keep the program running until the user interrupts with Ctrl + c
 
 import nifgen            # for FGEN Instrument control
         
-import time              # time is used to keep the program running until the user interrupts with Ctrl + c
-
 
 def example(resource_name, waveform_type, amplitude, frequency, options):
     """
