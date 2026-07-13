@@ -83,6 +83,7 @@ def example(resource_name, waveform_type, amplitude, frequency, options):
             pass
         finally:
             session.output_enabled = False  # Disable the output to stop waveform generation
+            session.abort()  # Abort the session to clean up resources
             print("Waveform generation ended")  # Inform the user that waveform generation has ended
 
 
