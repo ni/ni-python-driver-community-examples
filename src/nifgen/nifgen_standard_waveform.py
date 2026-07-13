@@ -16,13 +16,16 @@ ii. From terminal (with custom values):
 iii. To simulate without hardware:
     python nifgen_standard_waveform.py \
         -op "Simulate=1,DriverSetup=Model:5433 (1CH);BoardType:PXIe"
+
 """
 
 # Module imports
-import argparse                  # argparse is used to parse command line arguments
-import sys                       # sys is used to access command line arguments
+import argparse          # argparse is used to parse command line arguments
+import sys               # sys is used to access command line arguments
 
-import nifgen                    # for FGEN Instrument control
+import nifgen            # for FGEN Instrument control
+        
+import time              # time is used to keep the program running until the user interrupts with Ctrl + c
 
 
 def example(resource_name, waveform_type, amplitude, frequency, options):
@@ -70,8 +73,6 @@ def example(resource_name, waveform_type, amplitude, frequency, options):
         print("\nWaveform generation started. Press Ctrl + c to end the program")  # Informs the user that waveform generation has started and how to stop it
 
         # Keep the program running until the user interrupts with Ctrl + c.
-        import time
-
         try:
             if "Simulate=1" in (options or "") or not sys.stdin.isatty():
                 # Avoid hanging automated/non-interactive runs and avoid busy-waiting.
@@ -83,7 +84,6 @@ def example(resource_name, waveform_type, amplitude, frequency, options):
             pass
         finally:
             session.output_enabled = False  # Disable the output to stop waveform generation
-            session.abort()  # Abort the session to stop waveform generation
             print("Waveform generation ended")  # Inform the user that waveform generation has ended
 
 
@@ -96,7 +96,6 @@ def _main(argsv):
     parser.add_argument("-a",   "--amplitude",  type=float, default=2.0,           help="Waveform amplitude in volts")
     parser.add_argument("-f",   "--frequency",  type=float, default=1e6,           help="Waveform frequency in Hz")
     parser.add_argument("-op",  "--options",                default="",            help="Driver initialization options")
-
     args = parser.parse_args(argsv)
 
     example(
