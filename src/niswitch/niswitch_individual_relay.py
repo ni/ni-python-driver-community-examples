@@ -16,7 +16,7 @@ i.   From terminal (with default values):
 
 ii.  From terminal (with custom values):
         python niswitch_individual_relay.py \
-            -rn "PXI2568" -tp "2568/31-SPST" -rl "k0" -ra "CLOSE"
+            -n "PXI2568" -tp "2568/31-SPST" -rn "k0" -ra "CLOSE"
 
 iii. To simulate without hardware:
         PowerShell:  python niswitch_individual_relay.py -sim
@@ -83,7 +83,7 @@ def example(
         # - Waits until the relay has mechanically settled after the action
         session.wait_for_debounce()
 
-        #- Print relay action result to console
+        # - Print relay action result to console
         print(f"Relay '{relay_name}': {relay_action.upper()} action completed.")
 
 
@@ -93,9 +93,9 @@ def _main(argsv):
         description='NI-SWITCH Individual Relay Control: close or open a relay on a switch module.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument('-rn',  '--resource-name',  default='PXI2568',        help='NI-SWITCH device resource name')
+    parser.add_argument('-n',  '--resource-name',    default='PXI2568',        help='NI-SWITCH device resource name')
     parser.add_argument('-tp',  '--topology',        default='2568/31-SPST',  help='Switch topology string')
-    parser.add_argument('-rl',  '--relay-name',      default='k0',            help='Relay identifier on the switch module')
+    parser.add_argument('-rn',  '--relay-name',      default='k0',            help='Relay identifier on the switch module')
     parser.add_argument('-ra',  '--relay-action',    default='CLOSE',         choices=['CLOSE', 'OPEN'], help='Relay action to perform')
     parser.add_argument('-sim', '--simulate',       action='store_true', default=False, help='Run in simulation mode (no hardware required)')
     parser.add_argument('-rst', '--reset-device',   action='store_true', default=False, help='Reset device at session open')
