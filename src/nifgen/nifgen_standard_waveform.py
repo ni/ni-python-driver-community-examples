@@ -13,6 +13,7 @@ i. From terminal (with default values):
 ii. From terminal (with custom values):
     python nifgen_standard_waveform.py \
         -n "PXI1Slot11" -w "sine" -a 2.0 -f 1e6
+
 iii. To simulate without hardware:
     python nifgen_standard_waveform.py \
         -op "Simulate=1,DriverSetup=Model:5433 (1CH);BoardType:PXIe"
@@ -84,6 +85,7 @@ def example(resource_name, waveform_type, amplitude, frequency, options):
         finally:
             session.output_enabled = False  # Disable the output to stop waveform generation
             session.abort()  # Abort the session to clean up resources
+            
             print("Waveform generation ended")  # Inform the user that waveform generation has ended
 
 
