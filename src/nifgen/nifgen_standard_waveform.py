@@ -126,7 +126,7 @@ def test_main():
 
 
 # ------------------------------------------------------------
-# Script execution starts here
+# Script execution starts here 
 # ------------------------------------------------------------
 if __name__ == '__main__':
     main()
