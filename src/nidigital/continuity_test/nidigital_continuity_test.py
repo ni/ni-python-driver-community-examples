@@ -129,6 +129,7 @@ def _main(argsv):
     ppmu_voltage_limit_low=args.ppmu_voltage_limit_low,
     ppmu_voltage_limit_high=args.ppmu_voltage_limit_high)
 
+
 def main():
     #Entry point — passes real CLI args to _main().
     _main(sys.argv[1:])
@@ -149,10 +150,12 @@ def test_example():
 
     example(resource_name=resource_name, options=options, ppmu_current_level=ppmu_current_level, test_voltage_limit_high=test_voltage_limit_high, test_voltage_limit_low=test_voltage_limit_low, pmu_aperture_time=pmu_aperture_time, ppmu_current_limit_range=ppmu_current_limit_range, ppmu_current_level_range=ppmu_current_level_range, ppmu_voltage_limit_low=ppmu_voltage_limit_low, ppmu_voltage_limit_high=ppmu_voltage_limit_high)
 
+
 def test_main():
     #Simulated CLI test — runs _main() with simulate option string.
     cmd_line = ['--option-string', 'Simulate=1, DriverSetup=Model:6571; BoardType:PXIe']
     _main(cmd_line)
+
 
 # ------------------------------------------------------------
 # Script execution starts here
