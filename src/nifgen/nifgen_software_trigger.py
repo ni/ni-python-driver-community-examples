@@ -174,6 +174,7 @@ def example(
                     time.sleep(5.0)
         except KeyboardInterrupt:
             session.abort()                              # Abort the session to clean up resources
+            session.reset()                              # Reset the AWG to its default state
             print("\nProgram ended by user")             # Inform the user that the program has ended due to user interrupt
 
 
