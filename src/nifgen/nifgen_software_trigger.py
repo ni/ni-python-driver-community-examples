@@ -159,7 +159,7 @@ def example(
             print(f"Gain: {gain}")
             print(f"Offset: {offset} V")
             print(f"Loop Count: {loop_count}")
-            print("\nPress 'Q' key to send a software trigger and cycle waveforms.")
+            print("\nPress 'Q' key to send a software trigger to change waveforms.")
             print("Available waveforms: " + ", ".join(waveform_names))
             print("Press Ctrl + C to end the program.\n")
 
@@ -170,7 +170,7 @@ def example(
                         trigger=nifgen.Trigger.START,
                         trigger_id=""
                     )                                    # Send software trigger to start waveform sequence
-                    print("Software trigger sent - waveform cycling...")
+                    print("Software trigger sent - switching to next waveform in sequence...")
                     time.sleep(5.0)
         except KeyboardInterrupt:
             session.abort()                              # Abort the session to clean up resources
