@@ -17,7 +17,7 @@ i.   From terminal (with default values):
 
 ii.  From terminal (with custom values):
         python nifgen_software_trigger.py \
-            -n "PXI1Slot11" -sr 1e6 -ns 100 -g 1.0 -o 0.0 -lc 1
+            -n "PXI1Slot11" -sr 1e6 -ns 100 -g 1.0 -o 0.0
 
 iii. To simulate without hardware:
     python nifgen_software_trigger.py \
@@ -65,7 +65,7 @@ def generate_waveforms(number_of_samples):
 def example(
     resource_name, fgen_options,
     sample_rate, number_of_samples,
-    gain, offset, loop_count):
+    gain, offset):
     """
     Configure FGEN with multiple waveforms in sequence mode and respond to software triggers.
 
@@ -93,11 +93,6 @@ def example(
             Sequence waveform DC offset voltage
             REASON: Enables testing with signal bias/offset without code changes
             eg: 0.0 → no offset, 1.0 → +1V offset
-
-        loop_count (int):
-            Number of times each waveform repeats per trigger
-            REASON: Configurable repetition allows testing various duty cycles and sequences
-            eg: 1 → play once, 3 → play three times per trigger
 
     Returns:
         None — results are printed to console and real-time output is generated
@@ -140,7 +135,7 @@ def example(
         # Create sequence with configurable loop count per waveform
         sequence_handle = session.create_arb_sequence(
             waveform_handles,
-            loop_counts_array=[loop_count] * len(waveforms)
+            loop_counts_array=[1] * len(waveforms)
         )
         session.configure_arb_sequence(
             sequence_handle=sequence_handle,
@@ -158,8 +153,7 @@ def example(
             print(f"Number of Samples: {number_of_samples}")
             print(f"Gain: {gain}")
             print(f"Offset: {offset} V")
-            print(f"Loop Count: {loop_count}")
-            print("\nPress 'Q' key to send a software trigger to change waveforms.")
+            print("\nPress 'Q' key to send a software trigger and cycle waveforms.")
             print("Available waveforms: " + ", ".join(waveform_names))
             print("Press Ctrl + C to end the program.\n")
 
@@ -170,7 +164,7 @@ def example(
                         trigger=nifgen.Trigger.START,
                         trigger_id=""
                     )                                    # Send software trigger to start waveform sequence
-                    print("Software trigger sent - switching to next waveform in sequence...")
+                    print("Software trigger sent - waveform cycling...")
                     time.sleep(5.0)
         except KeyboardInterrupt:
             session.abort()                              # Abort the session to clean up resources
@@ -186,7 +180,6 @@ def _main(argsv):
     parser.add_argument('-ns',  '--number-of-samples',  default=100,   type=int,   help='Number of samples per waveform')
     parser.add_argument('-g',   '--gain',               default=1.0,   type=float, help='Sequence waveform gain scaling factor (amplitude)')
     parser.add_argument('-o',   '--offset',             default=0.0,   type=float, help='Sequence waveform DC offset voltage (V)')
-    parser.add_argument('-lc',  '--loop-count',         default=1,     type=int,   help='Number of times each waveform repeats per trigger')
     parser.add_argument('-op',  '--option-string',      default='',    type=str,   help='FGEN driver option string, eg: "Simulate=1, DriverSetup=Model:5412"')
     args = parser.parse_args(argsv)
 
@@ -197,7 +190,6 @@ def _main(argsv):
         number_of_samples=args.number_of_samples,
         gain=args.gain,
         offset=args.offset,
-        loop_count=args.loop_count,
     )
 
 
@@ -209,7 +201,7 @@ def main():
 def test_example():
     """Simulated hardware test — runs example() with a simulated PXIe-5433 (no real HW needed)."""
     options = "Simulate=1,DriverSetup=Model:5433 (1CH);BoardType:PXIe"
-    example("PXI1Slot11", options, 1e6, 100, 1.0, 0.0, 1, options)
+    example("PXI1Slot11", 1e6, 100, 1.0, 0.0, options)
 
 
 def test_main():
