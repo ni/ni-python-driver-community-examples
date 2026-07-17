@@ -172,13 +172,14 @@ def example( switch_resource_name, switch_topology, dmm_resource_name, dmm_optio
 
             # -> Fetch and Print Results
             # - Read current DMM acquisition status (samples acquired so far)
-            # - Fetch at least samples_to_fetch, or however many the DMM has ready
+            # - Fetch at least samples_to_fetch, or the number of samples 
+            # have been acquired so far (whichever is greater)
             dmm_status = dmm_session.read_status()
             print("DMM Status:    ", dmm_status)
 
             measurement = dmm_session.fetch_multi_point(
                 array_size=max(dmm_status[0], samples_to_fetch),
-                maximum_time=5000,
+                maximum_time=5000,  # milliseconds
             )
             print("Measurements:  ", measurement)
 
@@ -227,7 +228,7 @@ def test_example():
     example(
         switch_resource_name='PXI2568',
         switch_topology='2568/31-SPST',
-        dmm_resource_name='DMM',
+        dmm_resource_name='PXI4081',
         dmm_options=dmm_options,
         scan_list='ch0->com0;',
         samples_to_fetch=5,
