@@ -51,18 +51,6 @@ Before using these examples, ensure you have the following installed:
 
 Each example is self-contained and includes comments explaining the key steps.
 
-### Running an Example
-
-1. Navigate to the desired driver directory:
-   ```bash
-   cd src/nidcpower
-   ```
-
-2. Run the example script:
-   ```bash
-   python example_script.py
-   ```
-
 ### Finding Relevant Examples
 
 Each example script in this repository is designed for a specific use case. Check the example file headers and comments to understand:
