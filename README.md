@@ -1,17 +1,17 @@
 # NI Python Driver Community Examples
 
-The NI Python Driver Community Examples repository provides a collection of community-contributed and official examples for various NI instrument drivers. This is a complementary resource to the official NI driver documentation, offering real-world usage patterns and advanced techniques for hardware control and data acquisition.
+The NI Python Driver Community Examples repository provides a collection of community-contributed examples for various NI instrument drivers. This is a complementary resource to the official NI driver documentation, offering real-world usage patterns and advanced techniques for hardware control and data acquisition.
 
 ## Key Features & Available Examples
 
 This repository includes examples organized by instrument driver:
 
-- **nidcpower** - DC Power Supply and SMU (Source Measure Unit) examples
+- **nidcpower** - SMU (Source Measure Unit) examples
 - **nidigital** - Digital Pattern Generation and Measurement examples
-- **nidmm** - Digital Multimeter examples
-- **nifgen** - Function Generator and Arbitrary Waveform Generation examples
-- **niscope** - Oscilloscope examples
-- **niswitch** - Switching Matrix and Relay examples
+- **nidmm**     - Digital Multimeter examples
+- **nifgen**    - Function Generator and Arbitrary Waveform Generation examples
+- **niscope**   - Oscilloscope examples
+- **niswitch**  - Switching Matrix and Relay examples
 
 ## Installation
 
@@ -19,10 +19,11 @@ This repository includes examples organized by instrument driver:
 
 Before using these examples, ensure you have the following installed:
 
-- **Python 3.6 or later**
-- **NI Drivers** - Install the required instrument drivers for your hardware from [ni.com/downloads](https://www.ni.com/downloads)
+- **Python 3.12 or later**
 
--**Install Python Driver Packages**
+- **NI Instrument Drivers** - Download and Install the required instrument drivers for your hardware from [ni.com/downloads](https://www.ni.com/downloads)
+
+-**NI Python Driver Packages**
    
    Install the NI driver packages for the instruments you're using:
    ```bash
@@ -38,13 +39,13 @@ Before using these examples, ensure you have the following installed:
 ### System Requirements
 - Windows 10/11, macOS, or Linux
 - Administrator/sudo privileges may be required for NI driver installation
-- Compatible NI instruments connected via USB, Ethernet, or GPIB
 
 ### Python Dependencies
 - NI driver Python packages (e.g., `nidcpower`, `nidmm`, `nifgen`, `nidigital`, `niscope`, `niswitch`)
 
 ### Hardware Requirements
-- Compatible National Instruments hardware (e.g., PXIe-4162, 4139 for DC Power Supply, NI-DAQmx compatible devices, etc.)
+- NI PXIe chassis with embedded controller or remote connection via MXI-Express (PCIe) or Thunderbolt
+- Compatible National Instruments hardware (e.g., PXIe-4139,4147,4162 for DC Power Supply,PXIe-6363 for NI-DAQmx, PXIe-4081 for DMM, PXI-2568 for Switch, PXIe-5163 for Scope, PXIe-6571 for Digital and PXIe-5433 for Fgen and other compatible devices, etc.)
 - Appropriate cabling and connectors for your instrument
 
 ## Usage Examples
