@@ -17,7 +17,7 @@ i.   From terminal (with default values):
 
 ii.  From terminal (with custom values):
         python nifgen_software_trigger.py \
-            -n "PXI1Slot11" -sr 1e6 -ns 100 -g 1.0 -o 0.0
+            -n "PXI1Slot11" -sr 1e6 -ns 100 -g 1.0 -o 0.0 -li 50
 
 iii. To simulate without hardware:
     python nifgen_software_trigger.py \
@@ -65,7 +65,7 @@ def generate_waveforms(number_of_samples):
 def example(
     resource_name, fgen_options,
     sample_rate, number_of_samples,
-    gain, offset):
+    gain, offset, load_impedance):
     """
     Configure FGEN with multiple waveforms in sequence mode and respond to software triggers.
 
@@ -94,6 +94,10 @@ def example(
             REASON: Enables testing with signal bias/offset without code changes
             eg: 0.0 → no offset, 1.0 → +1V offset
 
+        load_impedance (float):
+            Output load impedance in ohms
+            eg: 50.0 → 50 Ω (standard), 1e6 → high-impedance
+
     Returns:
         None — results are printed to console and real-time output is generated
     """
@@ -120,6 +124,7 @@ def example(
         # - start_trigger_type → Trigger type (SOFTWARE_EDGE for user-triggered)
         session.output_mode = nifgen.OutputMode.SEQ
         session.arb_sample_rate = sample_rate
+        session.load_impedance = load_impedance
 
         # Set trigger mode and start trigger type directly
         session.trigger_mode = nifgen.TriggerMode.BURST
@@ -153,6 +158,7 @@ def example(
             print(f"Number of Samples: {number_of_samples}")
             print(f"Gain: {gain}")
             print(f"Offset: {offset} V")
+            print(f"Load Impedance: {load_impedance} Ohms")
             print("\nPress 'Q' key to send a software trigger and cycle waveforms.")
             print("Available waveforms: " + ", ".join(waveform_names))
             print("Press Ctrl + C to end the program.\n")
@@ -180,6 +186,7 @@ def _main(argsv):
     parser.add_argument('-ns',  '--number-of-samples',  default=100,   type=int,   help='Number of samples per waveform')
     parser.add_argument('-g',   '--gain',               default=1.0,   type=float, help='Sequence waveform gain scaling factor (amplitude)')
     parser.add_argument('-o',   '--offset',             default=0.0,   type=float, help='Sequence waveform DC offset voltage (V)')
+    parser.add_argument('-li',  '--load-impedance',     default=50.0,  type=float, help='Output load impedance in ohms')
     parser.add_argument('-op',  '--option-string',      default='',    type=str,   help='FGEN driver option string, eg: "Simulate=1, DriverSetup=Model:5412"')
     args = parser.parse_args(argsv)
 
@@ -190,6 +197,7 @@ def _main(argsv):
         number_of_samples=args.number_of_samples,
         gain=args.gain,
         offset=args.offset,
+        load_impedance=args.load_impedance,
     )
 
 
@@ -201,7 +209,7 @@ def main():
 def test_example():
     """Simulated hardware test — runs example() with a simulated PXIe-5433 (no real HW needed)."""
     options = "Simulate=1,DriverSetup=Model:5433 (1CH);BoardType:PXIe"
-    example("PXI1Slot11", 1e6, 100, 1.0, 0.0, options)
+    example("PXI1Slot11", options, 1e6, 100, 1.0, 0.0, 50.0)
 
 
 def test_main():

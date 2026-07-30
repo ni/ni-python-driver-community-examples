@@ -3,7 +3,7 @@
 
 This example demonstrates how to generate standard waveforms using an NI-FGEN device
 in Standard Function mode. Various waveform types (sine, square, triangle, ramp, etc.)
-can be generated with configurable amplitude and frequency parameters.
+can be generated with configurable amplitude, frequency, load impedance, and offset parameters.
 
 HOW TO RUN:
 -----------
@@ -12,7 +12,7 @@ i. From terminal (with default values):
 
 ii. From terminal (with custom values):
     python nifgen_standard_waveform.py \
-        -n "PXI1Slot11" -w "sine" -a 2.0 -f 1e6
+        -n "PXI1Slot11" -w "sine" -a 2.0 -f 1e6 -li 50 -o 0
 
 iii. To simulate without hardware:
     python nifgen_standard_waveform.py \
@@ -28,7 +28,7 @@ import time              # time is used to keep the program running until the us
 import nifgen            # for FGEN Instrument control
         
 
-def example(resource_name, waveform_type, amplitude, frequency, options):
+def example(resource_name, waveform_type, amplitude, frequency, load_impedance, offset, options):
     """
     Core waveform generation logic — opens session, configures output,
     and generates the specified waveform.
@@ -38,6 +38,8 @@ def example(resource_name, waveform_type, amplitude, frequency, options):
         waveform_type (str): Type of waveform to generate (sine, square, triangle, etc.).
         amplitude (float): Waveform amplitude in volts.
         frequency (float): Waveform frequency in Hz.
+        load_impedance (float): Load impedance in ohms.
+        offset (float): Waveform offset in volts.
         options (str): Driver initialization options.
     """
 
@@ -55,10 +57,13 @@ def example(resource_name, waveform_type, amplitude, frequency, options):
 
         # Set the output mode to Standard Function.
         session.output_mode = nifgen.OutputMode.FUNC
-        # Configure the waveform type, amplitude, and frequency.
+        # Configure the load impedance.
+        session.load_impedance = load_impedance
+        # Configure the waveform type, amplitude, frequency, and offset.
         session.configure_standard_waveform(waveform=waveforms[waveform_type],
                                             amplitude=amplitude,
-                                            frequency=frequency)
+                                            frequency=frequency,
+                                            dc_offset=offset)
         # Enable the output and initiate the waveform generation.
         session.output_enabled = True
         
@@ -70,6 +75,8 @@ def example(resource_name, waveform_type, amplitude, frequency, options):
         print("Waveform Type: {}".format(waveform_type))  # Prints the selected waveform type
         print("Amplitude: {} V".format(amplitude))  # Prints the configured amplitude in volts
         print("Frequency: {} Hz".format(frequency))  # Prints the configured frequency in hertz
+        print("Load Impedance: {} Ohms".format(load_impedance))  # Prints the configured load impedance
+        print("Offset: {} V".format(offset))  # Prints the configured offset in volts
         print("\nWaveform generation started. Press Ctrl + c to end the program")  # Informs the user that waveform generation has started and how to stop it
 
         # Keep the program running until the user interrupts with Ctrl + c.
@@ -97,6 +104,8 @@ def _main(argsv):
     parser.add_argument("-w",   "--waveform-type", default="sine", choices=["sine", "square", "triangle", "dc", "ramp_up", "ramp_down", "noise"], help="Waveform type (sine, square, triangle, dc, ramp_up, ramp_down, noise)")
     parser.add_argument("-a",   "--amplitude",  type=float, default=2.0,           help="Waveform amplitude in volts")
     parser.add_argument("-f",   "--frequency",  type=float, default=1e6,           help="Waveform frequency in Hz")
+    parser.add_argument("-li",  "--load-impedance",  type=float, default=50.0,    help="Load impedance in ohms")
+    parser.add_argument("-o",   "--offset",  type=float, default=0.0,             help="Waveform offset in volts")
     parser.add_argument("-op",  "--options",                default="",            help="Driver initialization options")
     args = parser.parse_args(argsv)
 
@@ -105,6 +114,8 @@ def _main(argsv):
         waveform_type=args.waveform_type,
         amplitude=args.amplitude,
         frequency=args.frequency,
+        load_impedance=args.load_impedance,
+        offset=args.offset,
         options=args.options)
 
 
@@ -116,7 +127,7 @@ def main():
 def test_example():
     """Simulated hardware test — runs example() with a simulated PXIe-5433 (no real HW needed)."""
     options = "Simulate=1,DriverSetup=Model:5433 (1CH);BoardType:PXIe"
-    example("PXI1Slot11", "sine", 2.0, 1e6, options)
+    example("PXI1Slot11", "sine", 2.0, 1e6, 50.0, 0.0, options)
 
 
 def test_main():
