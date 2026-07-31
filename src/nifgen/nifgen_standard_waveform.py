@@ -12,7 +12,7 @@ i. From terminal (with default values):
 
 ii. From terminal (with custom values):
     python nifgen_standard_waveform.py \
-        -n "PXI1Slot11" -w "sine" -a 2.0 -f 1e6 -li 50 -o 0
+        -n "PXI1Slot11" -ch "0" -w "sine" -a 2.0 -f 1e6 -li 50 -o 0
 
 iii. To simulate without hardware:
     python nifgen_standard_waveform.py \
@@ -28,13 +28,14 @@ import time              # time is used to keep the program running until the us
 import nifgen            # for FGEN Instrument control
         
 
-def example(resource_name, waveform_type, amplitude, frequency, load_impedance, offset, options):
+def example(resource_name, channel_name, waveform_type, amplitude, frequency, load_impedance, offset, options):
     """
     Core waveform generation logic — opens session, configures output,
     and generates the specified waveform.
 
     Args:
         resource_name (str): NI-FGEN resource name.
+        channel_name (str): Output channel name (e.g. "0").
         waveform_type (str): Type of waveform to generate (sine, square, triangle, etc.).
         amplitude (float): Waveform amplitude in volts.
         frequency (float): Waveform frequency in Hz.
@@ -53,7 +54,7 @@ def example(resource_name, waveform_type, amplitude, frequency, load_impedance, 
                  "noise": nifgen.Waveform.NOISE}
 
     # 'with' ensures automatic cleanup of session resources
-    with nifgen.Session(resource_name=resource_name, options=options) as session:
+    with nifgen.Session(resource_name=resource_name, channel_name=channel_name, options=options) as session:
 
         # Set the output mode to Standard Function.
         session.output_mode = nifgen.OutputMode.FUNC
@@ -71,7 +72,8 @@ def example(resource_name, waveform_type, amplitude, frequency, load_impedance, 
         session.initiate()
 
         # Display waveform configuration parameters.
-        print("\nWaveform Configuration:") # Prints a header for the waveform configuration section
+        print("\nWaveform Configuration:")
+        print("Channel: {}".format(channel_name))
         print("Waveform Type: {}".format(waveform_type))  # Prints the selected waveform type
         print("Amplitude: {} V".format(amplitude))  # Prints the configured amplitude in volts
         print("Frequency: {} Hz".format(frequency))  # Prints the configured frequency in hertz
@@ -100,7 +102,8 @@ def _main(argsv):
     """Command line interface — parses arguments and calls example()."""
     parser = argparse.ArgumentParser(description="NI-FGEN Standard Waveform Generation Example")
 
-    parser.add_argument("-n",   "--resource-name",         default="PXI1Slot11",    help="NI-FGEN resource name")
+    parser.add_argument("-n",   "--resource-name",   default="PXI1Slot11", help="NI-FGEN resource name")
+    parser.add_argument("-ch",  "--channel-name",    default="0",          help="Output channel name")
     parser.add_argument("-w",   "--waveform-type", default="sine", choices=["sine", "square", "triangle", "dc", "ramp_up", "ramp_down", "noise"], help="Waveform type (sine, square, triangle, dc, ramp_up, ramp_down, noise)")
     parser.add_argument("-a",   "--amplitude",  type=float, default=2.0,           help="Waveform amplitude in volts")
     parser.add_argument("-f",   "--frequency",  type=float, default=1e6,           help="Waveform frequency in Hz")
@@ -111,6 +114,7 @@ def _main(argsv):
 
     example(
         resource_name=args.resource_name,
+        channel_name=args.channel_name,
         waveform_type=args.waveform_type,
         amplitude=args.amplitude,
         frequency=args.frequency,
@@ -127,7 +131,7 @@ def main():
 def test_example():
     """Simulated hardware test — runs example() with a simulated PXIe-5433 (no real HW needed)."""
     options = "Simulate=1,DriverSetup=Model:5433 (1CH);BoardType:PXIe"
-    example("PXI1Slot11", "sine", 2.0, 1e6, 50.0, 0.0, options)
+    example("PXI1Slot11", "0", "sine", 2.0, 1e6, 50.0, 0.0, options)
 
 
 def test_main():
