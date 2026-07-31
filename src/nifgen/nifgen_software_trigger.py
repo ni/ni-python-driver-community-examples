@@ -17,7 +17,7 @@ i.   From terminal (with default values):
 
 ii.  From terminal (with custom values):
         python nifgen_software_trigger.py \
-            -n "PXI1Slot11" -sr 1e6 -ns 100 -g 1.0 -o 0.0 -li 50
+            -n "PXI1Slot11" -ch "0" -sr 1e6 -ns 100 -g 1.0 -o 0.0 -li 50
 
 iii. To simulate without hardware:
     python nifgen_software_trigger.py \
@@ -63,7 +63,7 @@ def generate_waveforms(number_of_samples):
 
 
 def example(
-    resource_name, fgen_options,
+    resource_name, channel_name, fgen_options,
     sample_rate, number_of_samples,
     gain, offset, load_impedance):
     """
@@ -72,6 +72,9 @@ def example(
     Args:
         resource_name (str):
             NI-FGEN device identifier (eg: "PXI1Slot11")
+
+        channel_name (str):
+            Output channel name (eg: "0")
 
         fgen_options (str or dict):
             FGEN driver options, eg: "" for real HW or simulate string for simulation
@@ -107,6 +110,7 @@ def example(
     # - 'with' ensures automatic cleanup of session resources
     with nifgen.Session(
         resource_name=resource_name,
+        channel_name=channel_name,
         reset_device=True,
         options=fgen_options,
     ) as session:
@@ -154,6 +158,7 @@ def example(
         try:
             session.initiate()
             print(f"FGEN Session initiated on {resource_name}")
+            print(f"Channel: {channel_name}")
             print(f"Sample Rate: {sample_rate} S/s")
             print(f"Number of Samples: {number_of_samples}")
             print(f"Gain: {gain}")
@@ -182,6 +187,7 @@ def _main(argsv):
     """Parses command-line arguments and calls example() with the parsed values."""
     parser = argparse.ArgumentParser(description='NI-FGEN Software Trigger Example')
     parser.add_argument('-n',  '--resource-name',      default='PXI1Slot11', help='FGEN resource name')
+    parser.add_argument('-ch', '--channel-name',        default='0',          help='Output channel name')
     parser.add_argument('-sr',  '--sample-rate',        default=1e6,   type=float, help='Arbitrary waveform sample rate (S/s)')
     parser.add_argument('-ns',  '--number-of-samples',  default=100,   type=int,   help='Number of samples per waveform')
     parser.add_argument('-g',   '--gain',               default=1.0,   type=float, help='Sequence waveform gain scaling factor (amplitude)')
@@ -192,6 +198,7 @@ def _main(argsv):
 
     example(
         resource_name=args.resource_name,
+        channel_name=args.channel_name,
         fgen_options=args.option_string,
         sample_rate=args.sample_rate,
         number_of_samples=args.number_of_samples,
@@ -209,7 +216,7 @@ def main():
 def test_example():
     """Simulated hardware test — runs example() with a simulated PXIe-5433 (no real HW needed)."""
     options = "Simulate=1,DriverSetup=Model:5433 (1CH);BoardType:PXIe"
-    example("PXI1Slot11", options, 1e6, 100, 1.0, 0.0, 50.0)
+    example("PXI1Slot11", "0", options, 1e6, 100, 1.0, 0.0, 50.0)
 
 
 def test_main():
