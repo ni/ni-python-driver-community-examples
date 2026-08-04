@@ -164,7 +164,7 @@ def _main(argsv):
     parser = argparse.ArgumentParser(description="NI-DCPower Sequence Mode Transient Response Plot")
 
     parser.add_argument('-n', '--resource-name', default='PXI1Slot1', help='Resource name of NI SMU')
-    parser.add_argument('-op', '--option-string', default='', type=str, help='Driver option string, eg: "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"')
+    parser.add_argument('-op', '--options', default='', type=str, help='Driver option string, eg: "Simulate=1, DriverSetup=Model:4139; BoardType:PXIe"')
     parser.add_argument('-sv', '--sequence-voltages', type=float, nargs='+', default=[0.0, 1.0, 2.0], help='Voltage levels for the sequence (space-separated)')
     parser.add_argument('-sd', '--source-delays', type=float, nargs='+', default=[1e-3, 1e-3, 1e-3], help='Per-step source delays in seconds (space-separated)')
     parser.add_argument('-vr', '--voltage-range', type=float, default=6.0, help='Voltage range (V)')
