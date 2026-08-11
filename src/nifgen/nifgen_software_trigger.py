@@ -178,21 +178,33 @@ def example(
                     print("Software trigger sent - waveform cycling...")
                     time.sleep(5.0)
         except KeyboardInterrupt:
-            session.abort()                              # Abort the session to clean up resources
-            session.reset()                              # Reset the AWG to its default state
-            print("\nProgram ended by user")             # Inform the user that the program has ended due to user interrupt
+            session.abort()                              # Stop waveform generation
+            # Actively drive the output to 0 V; abort alone leaves the DAC holding the last value.
+            session.output_mode = nifgen.OutputMode.FUNC
+            session.trigger_mode = nifgen.TriggerMode.CONTINUOUS 
+            session.configure_standard_waveform(
+                waveform=nifgen.Waveform.DC,
+                amplitude=0.0,
+                dc_offset=0.0,
+                frequency=0.0,
+                start_phase=0.0,
+            )
+            session.initiate()
+            session.abort()
+            session.reset()    
+            print("\nProqgram ended by user")             # Inform the user that the program has ended due to user interrupt
 
 
 def _main(argsv):
     """Parses command-line arguments and calls example() with the parsed values."""
     parser = argparse.ArgumentParser(description='NI-FGEN Software Trigger Example')
-    parser.add_argument('-n',  '--resource-name',      default='PXI1Slot11', help='FGEN resource name')
+    parser.add_argument('-n',  '--resource-name',      default='PXI1Slot7', help='FGEN resource name')
     parser.add_argument('-ch', '--channel-name',        default='0',          help='Output channel name')
-    parser.add_argument('-sr',  '--sample-rate',        default=1e6,   type=float, help='Arbitrary waveform sample rate (S/s)')
+    parser.add_argument('-sr',  '--sample-rate',        default=1e5,   type=float, help='Arbitrary waveform sample rate (S/s)')
     parser.add_argument('-ns',  '--number-of-samples',  default=100,   type=int,   help='Number of samples per waveform')
-    parser.add_argument('-g',   '--gain',               default=1.0,   type=float, help='Sequence waveform gain scaling factor (amplitude)')
-    parser.add_argument('-o',   '--offset',             default=0.0,   type=float, help='Sequence waveform DC offset voltage (V)')
-    parser.add_argument('-li',  '--load-impedance',     default=50.0,  type=float, help='Output load impedance in ohms')
+    parser.add_argument('-g',   '--gain',               default=2.0,   type=float, help='Sequence waveform gain scaling factor (amplitude)')
+    parser.add_argument('-o',   '--offset',             default=2,   type=float, help='Sequence waveform DC offset voltage (V)')
+    parser.add_argument('-li',  '--load-impedance',     default=1000000.0,  type=float, help='Output load impedance in ohms')
     parser.add_argument('-op',  '--option-string',      default='',    type=str,   help='FGEN driver option string, eg: "Simulate=1, DriverSetup=Model:5412"')
     args = parser.parse_args(argsv)
 
